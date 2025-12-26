@@ -1,11 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "AEGX2AL71Og=",
+  "dgSpecHash": "O2P6urvlLfA=",
   "success": true,
   "projectFilePath": "D:\\Software Engineering\\2nd Course 1st Semester\\Web Programming 2 Project\\GameShop\\Common\\Common.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Bozhidar\\.nuget\\packages\\azure.core\\1.47.1\\azure.core.1.47.1.nupkg.sha512",
     "C:\\Users\\Bozhidar\\.nuget\\packages\\azure.identity\\1.14.2\\azure.identity.1.14.2.nupkg.sha512",
+    "C:\\Users\\Bozhidar\\.nuget\\packages\\castle.core\\5.2.1\\castle.core.5.2.1.nupkg.sha512",
     "C:\\Users\\Bozhidar\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\Bozhidar\\.nuget\\packages\\microsoft.bcl.asyncinterfaces\\8.0.0\\microsoft.bcl.asyncinterfaces.8.0.0.nupkg.sha512",
     "C:\\Users\\Bozhidar\\.nuget\\packages\\microsoft.bcl.cryptography\\9.0.4\\microsoft.bcl.cryptography.9.0.4.nupkg.sha512",
@@ -25,6 +26,7 @@
     "C:\\Users\\Bozhidar\\.nuget\\packages\\microsoft.entityframeworkcore.abstractions\\10.0.1\\microsoft.entityframeworkcore.abstractions.10.0.1.nupkg.sha512",
     "C:\\Users\\Bozhidar\\.nuget\\packages\\microsoft.entityframeworkcore.analyzers\\10.0.1\\microsoft.entityframeworkcore.analyzers.10.0.1.nupkg.sha512",
     "C:\\Users\\Bozhidar\\.nuget\\packages\\microsoft.entityframeworkcore.design\\10.0.1\\microsoft.entityframeworkcore.design.10.0.1.nupkg.sha512",
+    "C:\\Users\\Bozhidar\\.nuget\\packages\\microsoft.entityframeworkcore.proxies\\10.0.1\\microsoft.entityframeworkcore.proxies.10.0.1.nupkg.sha512",
     "C:\\Users\\Bozhidar\\.nuget\\packages\\microsoft.entityframeworkcore.relational\\10.0.1\\microsoft.entityframeworkcore.relational.10.0.1.nupkg.sha512",
     "C:\\Users\\Bozhidar\\.nuget\\packages\\microsoft.entityframeworkcore.sqlserver\\10.0.1\\microsoft.entityframeworkcore.sqlserver.10.0.1.nupkg.sha512",
     "C:\\Users\\Bozhidar\\.nuget\\packages\\microsoft.extensions.caching.abstractions\\10.0.1\\microsoft.extensions.caching.abstractions.10.0.1.nupkg.sha512",
