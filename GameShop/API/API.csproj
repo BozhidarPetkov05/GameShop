@@ -7,6 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="FluentValidation" Version="8.3.0" />
+    <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.1" />
   </ItemGroup>
@@ -19,6 +21,8 @@
     <Folder Include="Controllers\" />
     <Folder Include="Infrastructure\" />
     <Folder Include="Infrastructure\RequestDTOs\" />
+    <Folder Include="Infrastructure\RequestDTOs\Games\" />
+    <Folder Include="Infrastructure\RequestDTOs\Orders\" />
     <Folder Include="Infrastructure\RequestDTOs\Shared\" />
   </ItemGroup>
 
