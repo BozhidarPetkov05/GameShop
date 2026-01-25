@@ -13,7 +13,8 @@ public class TokenServices
     {
         Claim[] claims = new Claim[]
         {
-            new Claim("loggedUserId", user.Id.ToString())
+            new Claim("loggedUserId", user.Id.ToString()),
+            new Claim("isAdmin", user.IsAdmin.ToString())
         };
 
         var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes("!Password123!Password123!Password123"));
