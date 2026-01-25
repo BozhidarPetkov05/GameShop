@@ -19,12 +19,16 @@
 
   <ItemGroup>
     <Folder Include="Controllers\" />
-    <Folder Include="Infrastructure\" />
-    <Folder Include="Infrastructure\RequestDTOs\" />
     <Folder Include="Infrastructure\RequestDTOs\Auth\" />
+    <Folder Include="Infrastructure\RequestDTOs\Companies\" />
     <Folder Include="Infrastructure\RequestDTOs\Games\" />
+    <Folder Include="Infrastructure\RequestDTOs\Genres\" />
     <Folder Include="Infrastructure\RequestDTOs\Orders\" />
+    <Folder Include="Infrastructure\RequestDTOs\Platforms\" />
     <Folder Include="Infrastructure\RequestDTOs\Shared\" />
+    <Folder Include="Infrastructure\RequestDTOs\Statuses\" />
+    <Folder Include="Infrastructure\RequestDTOs\Tags\" />
+    <Folder Include="Infrastructure\RequestDTOs\Users\" />
     <Folder Include="Services\" />
   </ItemGroup>
 
