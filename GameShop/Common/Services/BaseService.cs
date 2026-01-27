@@ -9,7 +9,7 @@ namespace Common.Services;
 
 public class BaseService<T> where T : BaseEntity
 {
-    private DbContext Context { get; set; }
+    protected DbContext Context { get; set; }
     protected DbSet<T> Items { get; set; }
 
     public BaseService()

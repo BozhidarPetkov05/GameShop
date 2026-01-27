@@ -28,6 +28,7 @@
     <Folder Include="Infrastructure\RequestDTOs\Statuses\" />
     <Folder Include="Infrastructure\RequestDTOs\Tags\" />
     <Folder Include="Infrastructure\RequestDTOs\Users\" />
+    <Folder Include="Infrastructure\ResponseDTOs\" />
     <Folder Include="Services\" />
   </ItemGroup>
 

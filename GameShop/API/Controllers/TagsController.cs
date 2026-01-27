@@ -69,6 +69,12 @@ namespace API.Controllers
             }
 
             Tag forUpdate = service.GetById(id);
+
+            if (forUpdate == null)
+            {
+                throw new Exception("Tag not found!");
+            }
+
             forUpdate.Name = model.Name;
             service.Save(forUpdate);
 
@@ -86,6 +92,12 @@ namespace API.Controllers
 
             TagServices services = new TagServices();
             Tag forDelete = services.GetById(id);
+
+            if (forDelete == null)
+            {
+                throw new Exception("Tag not found!");
+            }
+
             services.Delete(forDelete);
             return Ok(forDelete);
         }

@@ -1,5 +1,5 @@
 using System;
-using API.Infrastructure.RequestDTOs.Companies;
+using API.Infrastructure.RequestDTOs.Genres;
 using Common.Entities;
 using Common.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -11,12 +11,12 @@ namespace API.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class CompaniesController : ControllerBase
+    public class GenresController : ControllerBase
     {
         [HttpGet]
         public IActionResult Get()
         {
-            CompanyServices service = new CompanyServices();
+            GenreServices service = new GenreServices();
             return Ok(service.GetAll());
         }
 
@@ -24,26 +24,25 @@ namespace API.Controllers
         [Route("{id}")]
         public IActionResult Get([FromRoute] int id)
         {
-            CompanyServices service = new CompanyServices();
+            GenreServices service = new GenreServices();
             return Ok(service.GetById(id));
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody] CompanyRequest model)
+        public IActionResult Post([FromBody] GenreRequest model)
         {
             if (!User.HasClaim("isAdmin", "True"))
             {
                 return Forbid();
             }
 
-            CompanyServices service = new CompanyServices();
-            if (service.CompanyExist(model.Name))
+            GenreServices service = new GenreServices();
+            if (service.GenreExist(model.Name))
             {
-                throw new Exception("Company with this name already exists!");
+                throw new Exception("Genre with this name already exists!");
             }
 
-
-            var item = new Company()
+            var item = new Genre()
             {
                 Name = model.Name
             };
@@ -54,23 +53,24 @@ namespace API.Controllers
 
         [HttpPut]
         [Route("{id}")]
-        public IActionResult Put([FromRoute] int id, [FromBody] CompanyRequest model)
+        public IActionResult Put([FromRoute] int id, [FromBody] GenreRequest model)
         {
             if (!User.HasClaim("isAdmin", "True"))
             {
                 return Forbid();
             }
 
-            CompanyServices service = new CompanyServices();
-            if (service.CompanyExist(model.Name))
+            GenreServices service = new GenreServices();
+            if (service.GenreExist(model.Name))
             {
-                throw new Exception("Company with this name already exists!");
+                throw new Exception("Genre with this name already exists!");
             }
 
-            Company forUpdate = service.GetById(id);
+            Genre forUpdate = service.GetById(id);
+
             if (forUpdate == null)
             {
-                throw new Exception("Company not found!");
+                throw new Exception("Genre not found!");
             }
 
             forUpdate.Name = model.Name;
@@ -87,12 +87,12 @@ namespace API.Controllers
                 return Forbid();
             }
 
-            CompanyServices service = new CompanyServices();
-            Company forDelete = service.GetById(id);
+            GenreServices service = new GenreServices();
+            Genre forDelete = service.GetById(id);
 
             if (forDelete == null)
             {
-                throw new Exception("Company not found!");
+                throw new Exception("Genre not found!");
             }
 
             service.Delete(forDelete);
