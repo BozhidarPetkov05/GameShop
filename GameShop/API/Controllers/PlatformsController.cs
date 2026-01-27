@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using API.Infrastructure.RequestDTOs.Platforms;
+using API.Infrastructure.ResponseDTOs;
 using Common.Entities;
 using Common.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -17,7 +20,16 @@ namespace API.Controllers
         public IActionResult Get()
         {
             PlatformServices service = new PlatformServices();
-            return Ok(service.GetAll());
+
+            List<Platform> platforms = service.GetAll();
+            List<PlatformResponse> responses = new List<PlatformResponse>();
+
+            foreach (var platform in platforms)
+            {
+                PlatformResponse response = MapPlatformResponseDTO(platform);
+                responses.Add(response);
+            }
+            return Ok(responses);
         }
 
         [HttpGet]
@@ -25,7 +37,16 @@ namespace API.Controllers
         public IActionResult Get([FromRoute] int id)
         {
             PlatformServices service = new PlatformServices();
-            return Ok(service.GetById(id));
+
+            Platform platform = service.GetById(id);
+            if (platform == null)
+            {
+                throw new Exception("Platform with this ID does not exist!");
+            }
+
+            PlatformResponse response = MapPlatformResponseDTO(platform);
+
+            return Ok(response);
         }
 
         [HttpPost]
@@ -48,7 +69,9 @@ namespace API.Controllers
             };
 
             service.Save(item);
-            return Ok(item);
+
+            PlatformResponse response = MapPlatformResponseDTO(item);
+            return Ok(response);
         }
 
         [HttpPut]
@@ -75,7 +98,9 @@ namespace API.Controllers
 
             forUpdate.Name = model.Name;
             service.Save(forUpdate);
-            return Ok(forUpdate);
+
+            PlatformResponse response = MapPlatformResponseDTO(forUpdate);
+            return Ok(response);
         }
 
         [HttpDelete]
@@ -96,7 +121,19 @@ namespace API.Controllers
             }
 
             service.Delete(forDelete);
-            return Ok(forDelete);
+
+            PlatformResponse response = MapPlatformResponseDTO(forDelete);
+            return Ok(response);
+        }
+
+        private PlatformResponse MapPlatformResponseDTO(Platform platform)
+        {
+            return new PlatformResponse()
+            {
+                Id = platform.Id,
+                Name = platform.Name,
+                GameIds = platform.GamePlatforms.Select(gp => gp.GameId).ToList()
+            };
         }
     }
 }
