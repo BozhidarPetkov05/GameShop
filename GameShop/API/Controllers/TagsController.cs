@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using API.Infrastructure.RequestDTOs.Tags;
+using API.Infrastructure.ResponseDTOs;
 using Common.Entities;
 using Common.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -18,7 +21,17 @@ namespace API.Controllers
         public IActionResult Get()
         {
             TagServices service = new TagServices();
-            return Ok(service.GetAll());
+
+            List<Tag> tags = service.GetAll();
+            List<TagResponse> responses = new List<TagResponse>();
+
+            foreach (var tag in tags)
+            {
+                TagResponse response = MapTagResponseDTO(tag);
+                responses.Add(response);
+            }
+
+            return Ok(responses);
         }
 
         [HttpGet]
@@ -26,7 +39,16 @@ namespace API.Controllers
         public IActionResult Get([FromRoute] int id)
         {
             TagServices service = new TagServices();
-            return Ok(service.GetById(id));
+
+            Tag tag = service.GetById(id);
+            if (tag == null)
+            {
+                throw new Exception("Game with this ID does not exist!");
+            }
+
+            TagResponse response = MapTagResponseDTO(tag);
+
+            return Ok(response);
         }
 
         [HttpPost]
@@ -50,7 +72,8 @@ namespace API.Controllers
 
             service.Save(item);
 
-            return Ok(item);
+            TagResponse response = MapTagResponseDTO(item);
+            return Ok(response);
         }
 
         [HttpPut]
@@ -78,7 +101,8 @@ namespace API.Controllers
             forUpdate.Name = model.Name;
             service.Save(forUpdate);
 
-            return Ok(forUpdate);
+            TagResponse response = MapTagResponseDTO(forUpdate);
+            return Ok(response);
         }
 
         [HttpDelete]
@@ -99,7 +123,19 @@ namespace API.Controllers
             }
 
             services.Delete(forDelete);
-            return Ok(forDelete);
+
+            TagResponse response = MapTagResponseDTO(forDelete);
+            return Ok(response);
+        }
+
+        private TagResponse MapTagResponseDTO(Tag tag)
+        {
+            return new TagResponse()
+            {
+                Id = tag.Id,
+                Name = tag.Name,
+                GameIds = tag.GameTags.Select(g => g.GameId).ToList()
+            };
         }
     }
 }
