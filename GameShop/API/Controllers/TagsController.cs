@@ -2,6 +2,7 @@ using System;
 using API.Infrastructure.RequestDTOs.Tags;
 using Common.Entities;
 using Common.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi;
@@ -10,6 +11,7 @@ namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class TagsController : ControllerBase
     {
         [HttpGet]
