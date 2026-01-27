@@ -39,6 +39,11 @@ namespace API.Controllers
             GameServices service = new GameServices();
             Game item = service.GetById(id);
 
+            if (item == null)
+            {
+                throw new Exception("Game with this ID does not exist!");
+            }
+
             var response = MapGameResponseDTO(item);
             return Ok(response);
         }
@@ -179,18 +184,6 @@ namespace API.Controllers
 
         private GameResponse MapGameResponseDTO(Game game)
         {
-            var platformIds = new List<int>();
-            if (game.GamePlatforms != null)
-            {
-                platformIds = game.GamePlatforms.Select(gp => gp.PlatformId).ToList();
-            }
-
-            var tagIds = new List<int>();
-            if (game.GameTags != null)
-            {
-                tagIds = game.GameTags.Select(gt => gt.TagId).ToList();
-            }
-
             return new GameResponse()
             {
                 Id = game.Id,
@@ -199,8 +192,8 @@ namespace API.Controllers
                 Description = game.Description,
                 GenreId = game.GenreId,
                 CompanyId = game.CompanyId,
-                PlatformIds = platformIds,
-                TagIds = tagIds
+                PlatformIds = game.GamePlatforms.Select(gp => gp.PlatformId).ToList(),
+                TagIds = game.GameTags.Select(gt => gt.TagId).ToList()
             };
         }
     }
