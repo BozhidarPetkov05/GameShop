@@ -124,11 +124,16 @@ namespace API.Controllers
 
         private GenreResponse MapGenreResponseDTO(Genre genre)
         {
+            var gameIds = new List<int>();
+            if (gameIds != null)
+            {
+                gameIds = genre.Games.Select(g => g.Id).ToList();
+            }
             return new GenreResponse()
             {
                 Id = genre.Id,
                 Name = genre.Name,
-                GameIds = genre.Games.Select(g => g.Id).ToList()
+                GameIds = gameIds
             };
         }
     }

@@ -123,11 +123,17 @@ namespace API.Controllers
 
         private PlatformResponse MapPlatformResponseDTO(Platform platform)
         {
+            var gameIds = new List<int>();
+            if (platform.GamePlatforms != null)
+            {
+                gameIds = platform.GamePlatforms.Select(gp => gp.GameId).ToList();
+            }
+
             return new PlatformResponse()
             {
                 Id = platform.Id,
                 Name = platform.Name,
-                GameIds = platform.GamePlatforms.Select(gp => gp.GameId).ToList()
+                GameIds = gameIds
             };
         }
     }

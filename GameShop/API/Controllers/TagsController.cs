@@ -125,11 +125,16 @@ namespace API.Controllers
 
         private TagResponse MapTagResponseDTO(Tag tag)
         {
+            var gameIds = new List<int>();
+            if (gameIds != null)
+            {
+                gameIds = tag.GameTags.Select(g => g.GameId).ToList();
+            }
             return new TagResponse()
             {
                 Id = tag.Id,
                 Name = tag.Name,
-                GameIds = tag.GameTags.Select(g => g.GameId).ToList()
+                GameIds = gameIds
             };
         }
     }

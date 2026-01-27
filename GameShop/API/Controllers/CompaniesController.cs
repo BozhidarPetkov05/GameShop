@@ -124,11 +124,16 @@ namespace API.Controllers
 
         private CompanyResponse MapCompanyResponseDTO(Company company)
         {
+            var gameIds = new List<int>();
+            if (gameIds != null)
+            {
+                gameIds = company.Games.Select(g => g.Id).ToList();
+            }
             return new CompanyResponse()
             {
                 Id = company.Id,
                 Name = company.Name,
-                GameIds = company.Games.Select(g => g.Id).ToList()
+                GameIds = gameIds
             };
         }
     }
