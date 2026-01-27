@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using API.Infrastructure.RequestDTOs.Companies;
+using API.Infrastructure.ResponseDTOs;
 using Common.Entities;
 using Common.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -17,7 +20,17 @@ namespace API.Controllers
         public IActionResult Get()
         {
             CompanyServices service = new CompanyServices();
-            return Ok(service.GetAll());
+
+            List<Company> companies = service.GetAll();
+            List<CompanyResponse> responses = new List<CompanyResponse>();
+
+            foreach (var company in companies)
+            {
+                CompanyResponse response = MapCompanyResponseDTO(company);
+                responses.Add(response);
+            }
+
+            return Ok(responses);
         }
 
         [HttpGet]
@@ -25,7 +38,14 @@ namespace API.Controllers
         public IActionResult Get([FromRoute] int id)
         {
             CompanyServices service = new CompanyServices();
-            return Ok(service.GetById(id));
+            Company company = service.GetById(id);
+            if (company == null)
+            {
+                throw new Exception("Genre with this ID does not exist!");
+            }
+
+            var response = MapCompanyResponseDTO(company);
+            return Ok(response);
         }
 
         [HttpPost]
@@ -49,7 +69,14 @@ namespace API.Controllers
             };
 
             service.Save(item);
-            return Ok(item);
+
+            CompanyResponse response = new CompanyResponse()
+            {
+                Id = item.Id,
+                Name = item.Name,
+                GameIds = item.Games.Select(g => g.Id).ToList()
+            };
+            return Ok(response);
         }
 
         [HttpPut]
@@ -75,7 +102,14 @@ namespace API.Controllers
 
             forUpdate.Name = model.Name;
             service.Save(forUpdate);
-            return Ok(forUpdate);
+
+            CompanyResponse response = new CompanyResponse()
+            {
+                Id = forUpdate.Id,
+                Name = forUpdate.Name,
+                GameIds = forUpdate.Games.Select(g => g.Id).ToList()
+            };
+            return Ok(response);
         }
 
         [HttpDelete]
@@ -96,7 +130,24 @@ namespace API.Controllers
             }
 
             service.Delete(forDelete);
-            return Ok(forDelete);
+
+            CompanyResponse response = new CompanyResponse()
+            {
+                Id = forDelete.Id,
+                Name = forDelete.Name,
+                GameIds = forDelete.Games.Select(g => g.Id).ToList()
+            };
+            return Ok(response);
+        }
+
+        private CompanyResponse MapCompanyResponseDTO(Company company)
+        {
+            return new CompanyResponse()
+            {
+                Id = company.Id,
+                Name = company.Name,
+                GameIds = company.Games.Select(g => g.Id).ToList()
+            };
         }
     }
 }

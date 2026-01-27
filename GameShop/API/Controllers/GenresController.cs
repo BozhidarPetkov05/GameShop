@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using API.Infrastructure.RequestDTOs.Genres;
+using API.Infrastructure.ResponseDTOs;
 using Common.Entities;
 using Common.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -17,7 +20,16 @@ namespace API.Controllers
         public IActionResult Get()
         {
             GenreServices service = new GenreServices();
-            return Ok(service.GetAll());
+            List<Genre> genres = service.GetAll();
+            List<GenreResponse> responses = new List<GenreResponse>();
+
+            foreach (var genre in genres)
+            {
+                var response = MapGenreResponseDTO(genre);
+                responses.Add(response);
+            }
+
+            return Ok(responses);
         }
 
         [HttpGet]
@@ -25,7 +37,15 @@ namespace API.Controllers
         public IActionResult Get([FromRoute] int id)
         {
             GenreServices service = new GenreServices();
-            return Ok(service.GetById(id));
+            Genre genre = service.GetById(id);
+
+            if (genre == null)
+            {
+                throw new Exception("Genre with this ID does not exist!");
+            }
+
+            var response = MapGenreResponseDTO(genre);
+            return Ok(response);
         }
 
         [HttpPost]
@@ -48,7 +68,9 @@ namespace API.Controllers
             };
 
             service.Save(item);
-            return Ok(item);
+
+            var response = MapGenreResponseDTO(item);
+            return Ok(response);
         }
 
         [HttpPut]
@@ -75,7 +97,9 @@ namespace API.Controllers
 
             forUpdate.Name = model.Name;
             service.Save(forUpdate);
-            return Ok(forUpdate);
+
+            var response = MapGenreResponseDTO(forUpdate);
+            return Ok(response);
         }
 
         [HttpDelete]
@@ -96,7 +120,19 @@ namespace API.Controllers
             }
 
             service.Delete(forDelete);
-            return Ok(forDelete);
+
+            var response = MapGenreResponseDTO(forDelete);
+            return Ok(response);
+        }
+
+        private GenreResponse MapGenreResponseDTO(Genre genre)
+        {
+            return new GenreResponse()
+            {
+                Id = genre.Id,
+                Name = genre.Name,
+                GameIds = genre.Games.Select(g => g.Id).ToList()
+            };
         }
     }
 }
