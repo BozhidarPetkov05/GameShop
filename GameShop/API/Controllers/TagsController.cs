@@ -43,7 +43,7 @@ namespace API.Controllers
             Tag tag = service.GetById(id);
             if (tag == null)
             {
-                throw new Exception("Game with this ID does not exist!");
+                return NotFound("Tag with this id does not exist!");
             }
 
             TagResponse response = MapTagResponseDTO(tag);
@@ -56,13 +56,13 @@ namespace API.Controllers
         {
             if (!User.HasClaim("isAdmin", "True"))
             {
-                return Forbid();
+                return Forbid("Invalid permissions. Admin access required.");
             }
 
             TagServices service = new TagServices();
             if (service.TagExists(model.Name))
             {
-                throw new Exception("Tag with this name already exists!");
+                return BadRequest("Tag with this name already exists!");
             }
 
             var item = new Tag()
@@ -82,20 +82,15 @@ namespace API.Controllers
         {
             if (!User.HasClaim("isAdmin", "True"))
             {
-                return Forbid();
+                return Forbid("Invalid permissions. Admin access required.");
             }
 
             TagServices service = new TagServices();
-            if (service.TagExists(model.Name))
-            {
-                throw new Exception("Tag with this name already exists!");
-            }
 
             Tag forUpdate = service.GetById(id);
-
             if (forUpdate == null)
             {
-                throw new Exception("Tag not found!");
+                return NotFound("Tag with this id does not exist!");
             }
 
             forUpdate.Name = model.Name;
@@ -111,7 +106,7 @@ namespace API.Controllers
         {
             if (!User.HasClaim("isAdmin", "True"))
             {
-                return Forbid();
+                return Forbid("Invalid permissions. Admin access required.");
             }
 
             TagServices services = new TagServices();
@@ -119,7 +114,7 @@ namespace API.Controllers
 
             if (forDelete == null)
             {
-                throw new Exception("Tag not found!");
+                return NotFound("Tag with this id does not exist!");
             }
 
             services.Delete(forDelete);

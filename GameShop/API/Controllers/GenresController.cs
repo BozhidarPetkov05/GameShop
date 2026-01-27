@@ -20,6 +20,7 @@ namespace API.Controllers
         public IActionResult Get()
         {
             GenreServices service = new GenreServices();
+
             List<Genre> genres = service.GetAll();
             List<GenreResponse> responses = new List<GenreResponse>();
 
@@ -37,11 +38,11 @@ namespace API.Controllers
         public IActionResult Get([FromRoute] int id)
         {
             GenreServices service = new GenreServices();
-            Genre genre = service.GetById(id);
 
+            Genre genre = service.GetById(id);
             if (genre == null)
             {
-                throw new Exception("Genre with this ID does not exist!");
+                return NotFound("Genre with this id does not exist!");
             }
 
             var response = MapGenreResponseDTO(genre);
@@ -53,13 +54,13 @@ namespace API.Controllers
         {
             if (!User.HasClaim("isAdmin", "True"))
             {
-                return Forbid();
+                return Forbid("Invalid permissions. Admin access required.");
             }
 
             GenreServices service = new GenreServices();
             if (service.GenreExist(model.Name))
             {
-                throw new Exception("Genre with this name already exists!");
+                return BadRequest("Genre with this name already exists!");
             }
 
             var item = new Genre()
@@ -79,20 +80,16 @@ namespace API.Controllers
         {
             if (!User.HasClaim("isAdmin", "True"))
             {
-                return Forbid();
+                return Forbid("Invalid permissions. Admin access required.");
             }
 
             GenreServices service = new GenreServices();
-            if (service.GenreExist(model.Name))
-            {
-                throw new Exception("Genre with this name already exists!");
-            }
 
             Genre forUpdate = service.GetById(id);
 
             if (forUpdate == null)
             {
-                throw new Exception("Genre not found!");
+                return NotFound("Genre with this id does not exist!");
             }
 
             forUpdate.Name = model.Name;
@@ -108,7 +105,7 @@ namespace API.Controllers
         {
             if (!User.HasClaim("isAdmin", "True"))
             {
-                return Forbid();
+                return Forbid("Invalid permissions. Admin access required.");
             }
 
             GenreServices service = new GenreServices();
@@ -116,7 +113,7 @@ namespace API.Controllers
 
             if (forDelete == null)
             {
-                throw new Exception("Genre not found!");
+                return NotFound("Genre with this id does not exist!");
             }
 
             service.Delete(forDelete);

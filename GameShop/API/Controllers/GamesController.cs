@@ -23,6 +23,7 @@ namespace API.Controllers
 
             List<Game> games = service.GetAll();
             List<GameResponse> responses = new List<GameResponse>();
+
             foreach (var game in games)
             {
                 var response = MapGameResponseDTO(game);
@@ -37,11 +38,11 @@ namespace API.Controllers
         public IActionResult Get([FromRoute] int id)
         {
             GameServices service = new GameServices();
-            Game item = service.GetById(id);
 
+            Game item = service.GetById(id);
             if (item == null)
             {
-                throw new Exception("Game with this ID does not exist!");
+                return NotFound("Game with this id does not exist!");
             }
 
             var response = MapGameResponseDTO(item);
@@ -53,13 +54,13 @@ namespace API.Controllers
         {
             if (!User.HasClaim("isAdmin", "True"))
             {
-                return Forbid();
+                return Forbid("Invalid permissions. Admin access required.");
             }
 
             GameServices service = new GameServices();
             if (service.GameExist(model.Title))
             {
-                throw new Exception("Game with this title already exists!");
+                return BadRequest("Game with this title already exists!");
             }
 
             var item = new Game()
@@ -93,7 +94,6 @@ namespace API.Controllers
                 service.SaveGameTag(gameTag);
             }
 
-
             var response = MapGameResponseDTO(item);
 
             return Ok(response);
@@ -105,19 +105,15 @@ namespace API.Controllers
         {
             if (!User.HasClaim("isAdmin", "True"))
             {
-                return Forbid();
+                return Forbid("Invalid permissions. Admin access required.");
             }
 
             GameServices service = new GameServices();
-            if (service.GameExist(model.Title))
-            {
-                throw new Exception("Game with this title already exists!");
-            }
 
             Game forUpdate = service.GetById(id);
             if (forUpdate == null)
             {
-                throw new Exception("Game with this title already exists!");
+                return NotFound("Game with this id does not exist!");
             }
 
             service.DeleteGamePlatformsByGameId(forUpdate.Id);
@@ -162,7 +158,7 @@ namespace API.Controllers
         {
             if (!User.HasClaim("isAdmin", "True"))
             {
-                return Forbid();
+                return Forbid("Invalid permissions. Admin access required.");
             }
 
             GameServices service = new GameServices();
@@ -170,7 +166,7 @@ namespace API.Controllers
 
             if (forDelete == null)
             {
-                throw new Exception("Platform not found!");
+                return NotFound("Game with this id does not exist!");
             }
 
             service.DeleteGamePlatformsByGameId(forDelete.Id);

@@ -38,10 +38,11 @@ namespace API.Controllers
         public IActionResult Get([FromRoute] int id)
         {
             CompanyServices service = new CompanyServices();
+
             Company company = service.GetById(id);
             if (company == null)
             {
-                throw new Exception("Genre with this ID does not exist!");
+                return NotFound("Company with this id does not exist!");
             }
 
             var response = MapCompanyResponseDTO(company);
@@ -53,13 +54,13 @@ namespace API.Controllers
         {
             if (!User.HasClaim("isAdmin", "True"))
             {
-                return Forbid();
+                return Forbid("Invalid permissions. Admin access required.");
             }
 
             CompanyServices service = new CompanyServices();
             if (service.CompanyExist(model.Name))
             {
-                throw new Exception("Company with this name already exists!");
+                return BadRequest("Company with this name already exists!");
             }
 
 
@@ -70,12 +71,7 @@ namespace API.Controllers
 
             service.Save(item);
 
-            CompanyResponse response = new CompanyResponse()
-            {
-                Id = item.Id,
-                Name = item.Name,
-                GameIds = item.Games.Select(g => g.Id).ToList()
-            };
+            CompanyResponse response = MapCompanyResponseDTO(item);
             return Ok(response);
         }
 
@@ -85,30 +81,21 @@ namespace API.Controllers
         {
             if (!User.HasClaim("isAdmin", "True"))
             {
-                return Forbid();
+                return Forbid("Invalid permissions. Admin access required.");
             }
 
             CompanyServices service = new CompanyServices();
-            if (service.CompanyExist(model.Name))
-            {
-                throw new Exception("Company with this name already exists!");
-            }
 
             Company forUpdate = service.GetById(id);
             if (forUpdate == null)
             {
-                throw new Exception("Company not found!");
+                return NotFound("Company with this id does not exist!");
             }
 
             forUpdate.Name = model.Name;
             service.Save(forUpdate);
 
-            CompanyResponse response = new CompanyResponse()
-            {
-                Id = forUpdate.Id,
-                Name = forUpdate.Name,
-                GameIds = forUpdate.Games.Select(g => g.Id).ToList()
-            };
+            CompanyResponse response = MapCompanyResponseDTO(forUpdate);
             return Ok(response);
         }
 
@@ -118,7 +105,7 @@ namespace API.Controllers
         {
             if (!User.HasClaim("isAdmin", "True"))
             {
-                return Forbid();
+                return Forbid("Invalid permissions. Admin access required.");
             }
 
             CompanyServices service = new CompanyServices();
@@ -126,17 +113,12 @@ namespace API.Controllers
 
             if (forDelete == null)
             {
-                throw new Exception("Company not found!");
+                return NotFound("Company with this id does not exist!");
             }
 
             service.Delete(forDelete);
 
-            CompanyResponse response = new CompanyResponse()
-            {
-                Id = forDelete.Id,
-                Name = forDelete.Name,
-                GameIds = forDelete.Games.Select(g => g.Id).ToList()
-            };
+            CompanyResponse response = MapCompanyResponseDTO(forDelete);
             return Ok(response);
         }
 

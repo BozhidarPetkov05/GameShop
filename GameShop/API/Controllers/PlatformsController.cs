@@ -41,11 +41,10 @@ namespace API.Controllers
             Platform platform = service.GetById(id);
             if (platform == null)
             {
-                throw new Exception("Platform with this ID does not exist!");
+                return NotFound("Platform with this id does not exist!");
             }
 
             PlatformResponse response = MapPlatformResponseDTO(platform);
-
             return Ok(response);
         }
 
@@ -54,13 +53,13 @@ namespace API.Controllers
         {
             if (!User.HasClaim("isAdmin", "True"))
             {
-                return Forbid();
+                return Forbid("Invalid permissions. Admin access required.");
             }
 
             PlatformServices service = new PlatformServices();
             if (service.PlatformExist(model.Name))
             {
-                throw new Exception("Platform with this name already exists!");
+                return BadRequest("Platform with this name already exists!");
             }
 
             var item = new Platform()
@@ -80,20 +79,16 @@ namespace API.Controllers
         {
             if (!User.HasClaim("isAdmin", "True"))
             {
-                return Forbid();
+                return Forbid("Invalid permissions. Admin access required.");
             }
 
             PlatformServices service = new PlatformServices();
-            if (service.PlatformExist(model.Name))
-            {
-                throw new Exception("Platform with this name already exists!");
-            }
 
             Platform forUpdate = service.GetById(id);
 
             if (forUpdate == null)
             {
-                throw new Exception("Genre not found!");
+                return NotFound("Platform with this id does not exist!");
             }
 
             forUpdate.Name = model.Name;
@@ -109,7 +104,7 @@ namespace API.Controllers
         {
             if (!User.HasClaim("isAdmin", "True"))
             {
-                return Forbid();
+                return Forbid("Invalid permissions. Admin access required.");
             }
 
             PlatformServices service = new PlatformServices();
@@ -117,7 +112,7 @@ namespace API.Controllers
 
             if (forDelete == null)
             {
-                throw new Exception("Platform not found!");
+                return NotFound("Platform with this id does not exist");
             }
 
             service.Delete(forDelete);
