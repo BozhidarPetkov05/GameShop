@@ -125,7 +125,7 @@ namespace API.Controllers
         private GenreResponse MapGenreResponseDTO(Genre genre)
         {
             var gameIds = new List<int>();
-            if (gameIds != null)
+            if (genre.Games != null)
             {
                 gameIds = genre.Games.Select(g => g.Id).ToList();
             }
