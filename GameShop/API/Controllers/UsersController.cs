@@ -211,6 +211,7 @@ namespace API.Controllers
                 Password = user.Password,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
+                IsAdmin = user.IsAdmin,
                 OrderIds = orderIds
             };
         }

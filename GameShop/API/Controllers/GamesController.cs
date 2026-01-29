@@ -180,6 +180,18 @@ namespace API.Controllers
 
         private GameResponse MapGameResponseDTO(Game game)
         {
+            var platformIds = new List<int>();
+            if (game.GamePlatforms != null)
+            {
+                platformIds = game.GamePlatforms.Select(gp => gp.PlatformId).ToList();
+            }
+
+            var tagIds = new List<int>();
+            if (game.GameTags != null)
+            {
+                tagIds = game.GameTags.Select(gt => gt.TagId).ToList();
+            }
+
             return new GameResponse()
             {
                 Id = game.Id,
@@ -188,8 +200,8 @@ namespace API.Controllers
                 Description = game.Description,
                 GenreId = game.GenreId,
                 CompanyId = game.CompanyId,
-                PlatformIds = game.GamePlatforms.Select(gp => gp.PlatformId).ToList(),
-                TagIds = game.GameTags.Select(gt => gt.TagId).ToList()
+                PlatformIds = platformIds,
+                TagIds = tagIds
             };
         }
     }

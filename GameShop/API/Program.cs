@@ -18,11 +18,7 @@ builder.Services.AddCors(options =>
     });
 });
 
-builder.Services.AddControllers()
-    .ConfigureApiBehaviorOptions(options =>
-    {
-        options.SuppressModelStateInvalidFilter = true;
-    });
+builder.Services.AddControllers();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
