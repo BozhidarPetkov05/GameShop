@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using API.Infrastructure.RequestDTOs.Users;
+using API.Infrastructure.ResponseDTOs;
 using Common.Entities;
 using Common.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -18,24 +21,44 @@ namespace API.Controllers
         {
             if (!User.HasClaim("isAdmin", "True"))
             {
-                return Forbid();
+                return Forbid("Invalid permissions. Admin access required.");
             }
 
             UserServices service = new UserServices();
-            return Ok(service.GetAll());
+
+            List<User> users = service.GetAll();
+            List<UserResponse> responses = new List<UserResponse>();
+
+            foreach (var user in users)
+            {
+                UserResponse response = MapUserResponseDTO(user);
+                responses.Add(response);
+            }
+
+            return Ok(responses);
         }
+
 
         [HttpGet]
         [Route("{id}")]
         public IActionResult Get([FromRoute] int id)
         {
-            if (!User.HasClaim("isAdmin", "True"))
+            if (!User.HasClaim("loggedUserId", id.ToString()))
             {
-                return Forbid();
+                return Forbid("Invalid permissions. Admin access required.");
             }
 
             UserServices service = new UserServices();
-            return Ok(service.GetById(id));
+
+            User user = service.GetById(id);
+            if (user == null)
+            {
+                return NotFound("User with this id does not exist");
+            }
+
+            UserResponse response = MapUserResponseDTO(user);
+
+            return Ok(response);
         }
 
         [HttpPost]
@@ -44,9 +67,10 @@ namespace API.Controllers
             UserServices service = new UserServices();
             if (service.UserExists(model.Username))
             {
-                throw new Exception("User with this username already exists!");
+                return BadRequest("User with this username already exists!");
             }
 
+            UserResponse response;
             if (!User.HasClaim("isAdmin", "True"))
             {
                 var item = new User
@@ -59,6 +83,7 @@ namespace API.Controllers
                     IsAdmin = false
                 };
                 service.Save(item);
+                response = MapUserResponseDTO(item);
             }
             else
             {
@@ -72,9 +97,10 @@ namespace API.Controllers
                     IsAdmin = model.IsAdmin
                 };
                 service.Save(item);
+                response = MapUserResponseDTO(item);
             }
 
-            return Ok(model);
+            return Ok(response);
         }
 
         [HttpPut]
@@ -82,10 +108,7 @@ namespace API.Controllers
         public IActionResult Put([FromRoute] int id, [FromBody] UserRequest model)
         {
             UserServices service = new UserServices();
-            if (service.UserExists(model.Username))
-            {
-                throw new Exception("User with this username already exists!");
-            }
+
             if (!User.HasClaim("isAdmin", "True"))
             {
                 if (User.HasClaim("loggedUserId", id.ToString()))
@@ -94,7 +117,7 @@ namespace API.Controllers
 
                     if (forUpdate == null)
                     {
-                        throw new Exception("User not found!");
+                        return NotFound("User not found!");
                     }
 
                     forUpdate.Username = model.Username;
@@ -104,11 +127,13 @@ namespace API.Controllers
                     forUpdate.LastName = model.LastName;
 
                     service.Save(forUpdate);
-                    return Ok(forUpdate);
+
+                    UserResponse response = MapUserResponseDTO(forUpdate);
+                    return Ok(response);
                 }
                 else
                 {
-                    return Forbid();
+                    return Forbid("Invalid permissions. Admin access required.");
                 }
             }
             else
@@ -117,7 +142,7 @@ namespace API.Controllers
 
                 if (forUpdate == null)
                 {
-                    throw new Exception("User not found!");
+                    return NotFound("User not found!");
                 }
 
                 forUpdate.Username = model.Username;
@@ -127,8 +152,8 @@ namespace API.Controllers
                 forUpdate.LastName = model.LastName;
                 forUpdate.IsAdmin = model.IsAdmin;
 
-                service.Save(forUpdate);
-                return Ok(forUpdate);
+                UserResponse response = MapUserResponseDTO(forUpdate);
+                return Ok(response);
             }
         }
 
@@ -144,14 +169,16 @@ namespace API.Controllers
                     User forDelete = service.GetById(id);
                     if (forDelete == null)
                     {
-                        throw new Exception("User not found!");
+                        return NotFound("User not found!");
                     }
                     service.Delete(forDelete);
-                    return Ok(forDelete);
+
+                    UserResponse response = MapUserResponseDTO(forDelete);
+                    return Ok(response);
                 }
                 else
                 {
-                    return Forbid();
+                    return Forbid("Invalid permissions. Admin access required.");
                 }
             }
             else
@@ -160,11 +187,32 @@ namespace API.Controllers
                 User forDelete = service.GetById(id);
                 if (forDelete == null)
                 {
-                    throw new Exception("User not found!");
+                    return NotFound("User not found!");
                 }
                 service.Delete(forDelete);
-                return Ok(forDelete);
+
+                UserResponse response = MapUserResponseDTO(forDelete);
+                return Ok(response);
             }
+        }
+
+        private UserResponse MapUserResponseDTO(User user)
+        {
+            var orderIds = new List<int>();
+            if (user.Orders != null)
+            {
+                orderIds = user.Orders.Select(o => o.Id).ToList();
+            }
+
+            return new UserResponse()
+            {
+                Id = user.Id,
+                Email = user.Email,
+                Password = user.Password,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                OrderIds = orderIds
+            };
         }
     }
 }
