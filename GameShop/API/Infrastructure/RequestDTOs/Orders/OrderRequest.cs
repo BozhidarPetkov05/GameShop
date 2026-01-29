@@ -7,5 +7,6 @@ public class OrderRequest
 {
     public string ShippingAddress { get; set; }
 
+    public string Status { get; set; }
     public List<int> GameIds { get; set; }
 }
