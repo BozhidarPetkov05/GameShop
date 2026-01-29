@@ -1,0 +1,68 @@
+Create a React application.
+Don't use Axios, use fetch API instead.
+Don't use Redux, use React hooks instead.
+
+Create the React application in a new folder named FrontEnd.
+Use vite.
+Use whatever theme you decide. Dark blue preferably.
+
+Implement Login using JWT token.
+Use the following endpoint to obtain a token:
+---------------
+POST https://localhost:5000/api/Auth
+Content-Type: application/x-www-form-urlencoded
+
+username=admin&password=admin
+---------------------------------------------------
+{{url}} - https://localhost:5000
+Create a Users feature where all user entities are listed. NOTE: Only users who have "isAdmin" claim can have access to this feature.  
+Endpoint for getting the users data is: GET {{url}}/api/Users
+Admin can click on every user to check their information. The endpoint is GET {{url}}/api/Users/id where id is the id of the user the admin wants to access.
+
+Create a profile tab where the user can access his profile and edit/delete his profile. The editable fields are Username, Password, Email, First Name and Last Name. Endpoint for getting specific user data is: GET {{url}}/api/Users/id where id is the current id of the user. It has claim "loggedUserId".
+
+Create Platforms tab in the menu which can be seen from everyone. It should display all the platforms. The endpoint is: GET {{url}}/api/Platforms
+When Platform is clicked it should display all of the information about the platform. The endpoint is: GET {{url}}/api/Platforms/id where the id is the id of the clicked platform.
+The Platforms can only be edited from admins.
+
+Create Genres tab in the menu which can be seen from everyone. It should display all the genres. The endpoint is: GET {{url}}/api/Genres
+When Genre is clicked it should display all of the information about the genre. The endpoint is: GET {{url}}/api/Genres/id where the id is the id of the clicked genre.
+The Genres can only be edited from admins.
+
+Create Companies tab in the menu which can be seen from everyone. It should display all the companies. The endpoint is: GET {{url}}/api/Companies
+When Company is clicked it should display all of the information about the company. The endpoint is: GET {{url}}/api/Companies/id where the id is the id of the clicked company.
+The Companies can only be edited from admins.
+
+Create Tags tab in the menu which can be seen from everyone. It should display all the tags. The endpoint is: GET {{url}}/api/Tags
+When Tag is clicked it should display all of the information about the tag. The endpoint is: GET {{url}}/api/Tags/id where the id is the id of the clicked tag.
+The Tags can only be edited from admins.
+
+Create Statuses tab in the menu which can be seen only from the admin. It should display all the statuses. The endpoint is: GET {{url}}/api/Statuses
+When Status is clicked it should display all the information about the status. The endpoint is: {{url}}/api/Statuses/id where the id is the id of the clicked status.
+Statuses can only be seen and edited by admins.
+NOTE: Status "Pending" should be orange color, "Completed" should be green and "Cancelled" should be red
+
+Create Games tab which should be the main thing the users see when he logs in. The Games can be seen from every users and should be listed in a grid. The endpoint is: GET {{url}}/api/Games
+When all the games are displayed and user clicks on a game it should show all the information about the game. The endpoint is: GET {{url}}/api/Games/id where id is the id of the current game. Every game should have button "Add to Cart".
+Games can only be edited by admins. 
+When "Add to Cart" button is clicked it should add the game and its info into a temporary cart which don't have any special realization in the backend. Do it only on the front end like a modal. In the bottom it should have 2 buttons - "Clear" and "Make Order"
+When the "Clear" button is clicked the cart should be cleared. When the "Make Order" button is clicked it should create a new Order. The Orders should also have different tab so users can see it. A user can see only his orders, the admin can see all. The endpoint is: GET {{url}}/api/Orders
+When an Order is clicked it should open the specific order. The endpoint is: GET {{url}}/api/Orders/id where id is the id of the opened order. User has edit and delete options. When edit is clicked it should display a field where you can edit your Shipping Address and change the status to "Cancelled". If the address is not changed it should send the same JSON but with the old address.
+When the "Make Order" button is clicked it creates a new order. The admin can change the status of the orders.
+
+NOTES: 
+-id can only be integer
+-when creating a new entity, take the structure from API/Infrastructure/RequestDTOs and take the required folder, then the request cs file, depending on the required entity
+-when displaying information, take the structure from API/Infrastructure/ResponseDTOs and use the required Response cs file
+-when creating a game the fields should be dropdown menu where an option is selected, depending on all the data in the database tables, only for Company, Genre, Tag and Platform. A game can have many tags and platforms so probably make it like a modal with all the options listed like multiple choice.
+
+
+Place entities, services and components into separate folders.
+Separate services into separate files based on the entities they manage.
+
+Extract baseURL setting globally.
+
+
+
+
+
