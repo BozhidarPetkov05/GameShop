@@ -56,7 +56,7 @@ namespace API.Controllers
         {
             if (!User.HasClaim("isAdmin", "True"))
             {
-                return Forbid("Invalid permissions. Admin access required.");
+                return Unauthorized(new { message = "Invalid permissions. Admin access required." });
             }
 
             TagServices service = new TagServices();
@@ -82,7 +82,7 @@ namespace API.Controllers
         {
             if (!User.HasClaim("isAdmin", "True"))
             {
-                return Forbid("Invalid permissions. Admin access required.");
+                return Unauthorized(new { message = "Invalid permissions. Admin access required." });
             }
 
             TagServices service = new TagServices();
@@ -106,7 +106,7 @@ namespace API.Controllers
         {
             if (!User.HasClaim("isAdmin", "True"))
             {
-                return Forbid("Invalid permissions. Admin access required.");
+                return Unauthorized(new { message = "Invalid permissions. Admin access required." });
             }
 
             TagServices services = new TagServices();
@@ -130,11 +130,13 @@ namespace API.Controllers
             {
                 gameIds = tag.GameTags.Select(g => g.GameId).ToList();
             }
+
+            TagServices service = new TagServices();
             return new TagResponse()
             {
                 Id = tag.Id,
                 Name = tag.Name,
-                GameIds = gameIds
+                Games = service.GetGameNames(gameIds)
             };
         }
     }

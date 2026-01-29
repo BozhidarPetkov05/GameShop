@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Common.Entities;
 
@@ -42,4 +43,83 @@ public class GameServices : BaseService<Game>
         }
         Context.SaveChanges();
     }
+
+    #region Get Id
+    public int GetGenreId(string name)
+    {
+        return Context.Set<Genre>()
+            .Where(g => g.Name == name)
+            .Select(g => g.Id)
+            .FirstOrDefault();
+    }
+
+    public int GetCompanyId(string name)
+    {
+        return Context.Set<Company>()
+            .Where(c => c.Name == name)
+            .Select(c => c.Id)
+            .FirstOrDefault();
+    }
+
+    public List<int> GetPlatformIds(List<string> platforms)
+    {
+        return Context.Set<Platform>()
+            .Where(p => platforms.Contains(p.Name))
+            .Select(p => p.Id)
+            .ToList();
+    }
+
+    public List<int> GetTagIds(List<string> tags)
+    {
+        return Context.Set<Tag>()
+            .Where(t => tags.Contains(t.Name))
+            .Select(t => t.Id)
+            .ToList();
+    }
+
+    #endregion
+
+    #region Get By Id
+    public string GetGenreName(int id)
+    {
+        return Context.Set<Genre>()
+            .Where(g => g.Id == id)
+            .Select(g => g.Name)
+            .FirstOrDefault();
+    }
+
+    public string GetCompanyName(int id)
+    {
+        return Context.Set<Company>()
+            .Where(c => c.Id == id)
+            .Select(c => c.Name)
+            .FirstOrDefault();
+    }
+
+    public List<string> GetPlatformNames(List<int> ids)
+    {
+        if (ids == null || ids.Count == 0)
+        {
+            return new List<string>();
+        }
+
+        return Context.Set<Platform>()
+            .Where(p => ids.Contains(p.Id))
+            .Select(p => p.Name)
+            .ToList();
+    }
+
+    public List<string> GetTagNames(List<int> ids)
+    {
+        if (ids == null || ids.Count == 0)
+        {
+            return new List<string>();
+        }
+
+        return Context.Set<Tag>()
+            .Where(t => ids.Contains(t.Id))
+            .Select(t => t.Name)
+            .ToList();
+    }
+    #endregion
 }

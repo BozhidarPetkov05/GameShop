@@ -8,6 +8,7 @@ using Common.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace API.Controllers
 {
@@ -54,7 +55,7 @@ namespace API.Controllers
         {
             if (!User.HasClaim("isAdmin", "True"))
             {
-                return Forbid("Invalid permissions. Admin access required.");
+                return Unauthorized(new { message = "Invalid permissions. Admin access required." });
             }
 
             GameServices service = new GameServices();
@@ -63,18 +64,40 @@ namespace API.Controllers
                 return BadRequest("Game with this title already exists!");
             }
 
+            int genreId = service.GetGenreId(model.Genre);
+            int companyId = service.GetCompanyId(model.Company);
+            List<int> platformIds = service.GetPlatformIds(model.Platforms);
+            List<int> tagIds = service.GetTagIds(model.Tags);
+
+            if (genreId == 0)
+            {
+                return BadRequest("No genre with this name!");
+            }
+            if (companyId == 0)
+            {
+                return BadRequest("No company with this name!");
+            }
+            if (platformIds == null || platformIds.Count == 0)
+            {
+                return BadRequest("No platforms with this name");
+            }
+            if (tagIds == null || tagIds.Count == 0)
+            {
+                return BadRequest("No tags with this name");
+            }
+
             var item = new Game()
             {
                 Title = model.Title,
                 Price = model.Price,
                 Description = model.Description,
-                GenreId = model.GenreId,
-                CompanyId = model.CompanyId,
+                GenreId = genreId,
+                CompanyId = companyId,
             };
 
             service.Save(item);
 
-            foreach (var platformId in model.PlatformIds)
+            foreach (var platformId in platformIds)
             {
                 var gamePlatform = new GamePlatform()
                 {
@@ -84,7 +107,7 @@ namespace API.Controllers
                 service.SaveGamePlatform(gamePlatform);
             }
 
-            foreach (var tagId in model.TagIds)
+            foreach (var tagId in tagIds)
             {
                 var gameTag = new GameTag()
                 {
@@ -105,7 +128,7 @@ namespace API.Controllers
         {
             if (!User.HasClaim("isAdmin", "True"))
             {
-                return Forbid("Invalid permissions. Admin access required.");
+                return Unauthorized(new { message = "Invalid permissions. Admin access required." });
             }
 
             GameServices service = new GameServices();
@@ -119,13 +142,35 @@ namespace API.Controllers
             service.DeleteGamePlatformsByGameId(forUpdate.Id);
             service.DeleteGameTagsByGameId(forUpdate.Id);
 
+            int genreId = service.GetGenreId(model.Genre);
+            int companyId = service.GetCompanyId(model.Company);
+            List<int> platformIds = service.GetPlatformIds(model.Platforms);
+            List<int> tagIds = service.GetTagIds(model.Tags);
+
+            if (genreId == 0)
+            {
+                return BadRequest("No genre with this name!");
+            }
+            if (companyId == 0)
+            {
+                return BadRequest("No company with this name!");
+            }
+            if (platformIds == null || platformIds.Count == 0)
+            {
+                return BadRequest("No platforms with this name");
+            }
+            if (tagIds == null || tagIds.Count == 0)
+            {
+                return BadRequest("No tags with this name");
+            }
+
             forUpdate.Title = model.Title;
             forUpdate.Price = model.Price;
             forUpdate.Description = model.Description;
-            forUpdate.GenreId = model.GenreId;
-            forUpdate.CompanyId = model.CompanyId;
+            forUpdate.GenreId = genreId;
+            forUpdate.CompanyId = companyId;
 
-            foreach (var platformId in model.PlatformIds)
+            foreach (var platformId in platformIds)
             {
                 var gamePlatform = new GamePlatform()
                 {
@@ -135,7 +180,7 @@ namespace API.Controllers
                 service.SaveGamePlatform(gamePlatform);
             }
 
-            foreach (var tagId in model.TagIds)
+            foreach (var tagId in tagIds)
             {
                 var gameTag = new GameTag()
                 {
@@ -158,7 +203,7 @@ namespace API.Controllers
         {
             if (!User.HasClaim("isAdmin", "True"))
             {
-                return Forbid("Invalid permissions. Admin access required.");
+                return Unauthorized(new { message = "Invalid permissions. Admin access required." });
             }
 
             GameServices service = new GameServices();
@@ -192,16 +237,17 @@ namespace API.Controllers
                 tagIds = game.GameTags.Select(gt => gt.TagId).ToList();
             }
 
+            GameServices service = new GameServices();
             return new GameResponse()
             {
                 Id = game.Id,
                 Title = game.Title,
                 Price = game.Price,
                 Description = game.Description,
-                GenreId = game.GenreId,
-                CompanyId = game.CompanyId,
-                PlatformIds = platformIds,
-                TagIds = tagIds
+                Genre = service.GetGenreName(game.GenreId),
+                Company = service.GetCompanyName(game.CompanyId),
+                Platforms = service.GetPlatformNames(platformIds),
+                Tags = service.GetTagNames(tagIds)
             };
         }
     }

@@ -54,7 +54,7 @@ namespace API.Controllers
         {
             if (!User.HasClaim("isAdmin", "True"))
             {
-                return Forbid("Invalid permissions. Admin access required.");
+                return Unauthorized(new { message = "Invalid permissions. Admin access required." });
             }
 
             CompanyServices service = new CompanyServices();
@@ -81,7 +81,7 @@ namespace API.Controllers
         {
             if (!User.HasClaim("isAdmin", "True"))
             {
-                return Forbid("Invalid permissions. Admin access required.");
+                return Unauthorized(new { message = "Invalid permissions. Admin access required." });
             }
 
             CompanyServices service = new CompanyServices();
@@ -105,7 +105,7 @@ namespace API.Controllers
         {
             if (!User.HasClaim("isAdmin", "True"))
             {
-                return Forbid("Invalid permissions. Admin access required.");
+                return Unauthorized(new { message = "Invalid permissions. Admin access required." });
             }
 
             CompanyServices service = new CompanyServices();
@@ -129,11 +129,13 @@ namespace API.Controllers
             {
                 gameIds = company.Games.Select(g => g.Id).ToList();
             }
+
+            CompanyServices service = new CompanyServices();
             return new CompanyResponse()
             {
                 Id = company.Id,
                 Name = company.Name,
-                GameIds = gameIds
+                Games = service.ReturnNames(gameIds)
             };
         }
     }

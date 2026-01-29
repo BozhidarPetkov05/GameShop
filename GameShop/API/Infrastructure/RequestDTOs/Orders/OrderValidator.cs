@@ -11,7 +11,7 @@ public class OrderValidator : AbstractValidator<OrderRequest>
             .NotEmpty().WithMessage("Shipping address is required!")
             .MinimumLength(3).WithMessage("Shipping address must be at least 3 characters long!");
 
-        RuleFor(o => o.GameIds)
+        RuleFor(o => o.Games)
             .Must(list => list.Count > 0).WithMessage("Select at least one game!");
     }
 }

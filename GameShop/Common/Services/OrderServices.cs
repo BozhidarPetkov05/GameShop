@@ -41,4 +41,25 @@ public class OrderServices : BaseService<Order>
         }
         Context.SaveChanges();
     }
+
+    public List<int> GetGameIds(List<string> titles)
+    {
+        return Context.Set<Game>()
+            .Where(g => titles.Contains(g.Title))
+            .Select(g => g.Id)
+            .ToList();
+    }
+
+    public List<string> GetGameNames(List<int> ids)
+    {
+        if (ids == null || ids.Count == 0)
+        {
+            return new List<string>();
+        }
+
+        return Context.Set<Game>()
+            .Where(g => ids.Contains(g.Id))
+            .Select(g => g.Title)
+            .ToList();
+    }
 }

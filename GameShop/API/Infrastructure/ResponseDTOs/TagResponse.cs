@@ -7,5 +7,5 @@ public class TagResponse
 {
     public int Id { get; set; }
     public string Name { get; set; }
-    public List<int> GameIds { get; set; }
+    public List<string> Games { get; set; }
 }

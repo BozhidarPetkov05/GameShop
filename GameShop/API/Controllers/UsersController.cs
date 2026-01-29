@@ -21,7 +21,7 @@ namespace API.Controllers
         {
             if (!User.HasClaim("isAdmin", "True"))
             {
-                return Forbid("Invalid permissions. Admin access required.");
+                return Unauthorized(new { message = "Invalid permissions. Admin access required." });
             }
 
             UserServices service = new UserServices();
@@ -45,7 +45,7 @@ namespace API.Controllers
         {
             if (!User.HasClaim("loggedUserId", id.ToString()))
             {
-                return Forbid("Invalid permissions. Admin access required.");
+                return Unauthorized(new { message = "Invalid permissions. Admin access required." });
             }
 
             UserServices service = new UserServices();
@@ -133,7 +133,7 @@ namespace API.Controllers
                 }
                 else
                 {
-                    return Forbid("Invalid permissions. Admin access required.");
+                    return Unauthorized(new { message = "Invalid permissions. Admin access required." });
                 }
             }
             else
@@ -178,7 +178,7 @@ namespace API.Controllers
                 }
                 else
                 {
-                    return Forbid("Invalid permissions. Admin access required.");
+                    return Unauthorized(new { message = "Invalid permissions. Admin access required." });
                 }
             }
             else
@@ -198,10 +198,30 @@ namespace API.Controllers
 
         private UserResponse MapUserResponseDTO(User user)
         {
-            var orderIds = new List<int>();
+            List<OrderResponse> orders = new List<OrderResponse>();
+            OrderServices orderService = new OrderServices();
+
             if (user.Orders != null)
             {
-                orderIds = user.Orders.Select(o => o.Id).ToList();
+                foreach (var order in user.Orders)
+                {
+                    var gameIds = new List<int>();
+                    if (order.OrderGames != null)
+                    {
+                        gameIds = order.OrderGames.Select(og => og.GameId).ToList();
+                    }
+
+                    StatusServices service = new StatusServices();
+                    orders.Add(new OrderResponse()
+                    {
+                        Id = order.Id,
+                        UserId = order.UserId,
+                        TotalPrice = order.TotalPrice,
+                        Status = service.GetStatusName(order.StatusId),
+                        ShippingAddress = order.ShippingAddress,
+                        Games = orderService.GetGameNames(gameIds)
+                    });
+                }
             }
 
             return new UserResponse()
@@ -212,7 +232,7 @@ namespace API.Controllers
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 IsAdmin = user.IsAdmin,
-                OrderIds = orderIds
+                Orders = orders
             };
         }
     }

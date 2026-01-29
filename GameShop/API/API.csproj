@@ -24,7 +24,6 @@
     <Folder Include="Infrastructure\RequestDTOs\Genres\" />
     <Folder Include="Infrastructure\RequestDTOs\Orders\" />
     <Folder Include="Infrastructure\RequestDTOs\Platforms\" />
-    <Folder Include="Infrastructure\RequestDTOs\Shared\" />
     <Folder Include="Infrastructure\RequestDTOs\Statuses\" />
     <Folder Include="Infrastructure\RequestDTOs\Tags\" />
     <Folder Include="Infrastructure\RequestDTOs\Users\" />

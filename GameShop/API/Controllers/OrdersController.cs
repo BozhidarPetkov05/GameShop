@@ -65,7 +65,7 @@ namespace API.Controllers
             {
                 if (loggedUserId != order.UserId)
                 {
-                    return Forbid("Invalid permissions. Admin access required.");
+                    return Unauthorized(new { message = "Invalid permissions. Admin access required." });
                 }
 
                 OrderResponse response = MapOrderResponseDTO(order);
@@ -84,17 +84,23 @@ namespace API.Controllers
             OrderServices service = new OrderServices();
             int loggedUserId = int.Parse(User.FindFirst("loggedUserId").Value);
 
+            List<int> gameIds = service.GetGameIds(model.Games);
+            if (gameIds == null || gameIds.Count == 0)
+            {
+                return BadRequest("No games with this name!");
+            }
+
             var item = new Order()
             {
                 UserId = loggedUserId,
-                TotalPrice = service.CalculateTotalPrice(model.GameIds),
+                TotalPrice = service.CalculateTotalPrice(gameIds),
                 StatusId = service.GetStatusId("Pending"),
                 ShippingAddress = model.ShippingAddress
             };
 
             service.Save(item);
 
-            foreach (var gameId in model.GameIds)
+            foreach (var gameId in gameIds)
             {
                 var orderGame = new OrderGame()
                 {
@@ -126,7 +132,7 @@ namespace API.Controllers
             {
                 if (forUpdate.UserId != loggedUserId)
                 {
-                    return Forbid("Invalid permissions. Admin access required.");
+                    return Unauthorized(new { message = "Invalid permissions. Admin access required." });
                 }
 
                 if (model.Status == "Cancelled")
@@ -138,10 +144,17 @@ namespace API.Controllers
 
                 service.DeleteOrderGame(forUpdate.Id);
 
-                forUpdate.TotalPrice = service.CalculateTotalPrice(model.GameIds);
+                List<int> gameIds = service.GetGameIds(model.Games);
+                if (gameIds == null || gameIds.Count == 0)
+                {
+                    return BadRequest("No games with this name!");
+                }
+
+                forUpdate.TotalPrice = service.CalculateTotalPrice(gameIds);
                 forUpdate.ShippingAddress = model.ShippingAddress;
 
-                foreach (var gameId in model.GameIds)
+
+                foreach (var gameId in gameIds)
                 {
                     var orderGame = new OrderGame()
                     {
@@ -164,12 +177,14 @@ namespace API.Controllers
                 {
                     forUpdate.StatusId = service.GetStatusId("Cancelled");
                     var response = MapOrderResponseDTO(forUpdate);
+                    service.Save(forUpdate);
                     return Ok(response);
                 }
                 if (model.Status == "Completed")
                 {
                     forUpdate.StatusId = service.GetStatusId("Completed");
                     var response = MapOrderResponseDTO(forUpdate);
+                    service.Save(forUpdate);
                     return Ok(response);
                 }
 
@@ -177,10 +192,16 @@ namespace API.Controllers
                 {
                     service.DeleteOrderGame(forUpdate.Id);
 
-                    forUpdate.TotalPrice = service.CalculateTotalPrice(model.GameIds);
+                    List<int> gameIds = service.GetGameIds(model.Games);
+                    if (gameIds == null || gameIds.Count == 0)
+                    {
+                        return BadRequest("No games with this name!");
+                    }
+
+                    forUpdate.TotalPrice = service.CalculateTotalPrice(gameIds);
                     forUpdate.ShippingAddress = model.ShippingAddress;
 
-                    foreach (var gameId in model.GameIds)
+                    foreach (var gameId in gameIds)
                     {
                         var orderGame = new OrderGame()
                         {
@@ -216,7 +237,7 @@ namespace API.Controllers
             {
                 if (loggedUserId != forDelete.UserId)
                 {
-                    return Forbid("Invalid permissions. Admin access required.");
+                    return Unauthorized(new { message = "Invalid permissions. Admin access required." });
                 }
 
                 service.DeleteOrderGame(forDelete.Id);
@@ -240,14 +261,16 @@ namespace API.Controllers
                 gameIds = order.OrderGames.Select(og => og.GameId).ToList();
             }
 
+            OrderServices service = new OrderServices();
+            StatusServices statusService = new StatusServices();
             return new OrderResponse()
             {
                 Id = order.Id,
                 UserId = order.UserId,
                 TotalPrice = order.TotalPrice,
-                StatusId = order.StatusId,
+                Status = statusService.GetStatusName(order.StatusId),
                 ShippingAddress = order.ShippingAddress,
-                GameIds = gameIds
+                Games = service.GetGameNames(gameIds)
             };
         }
     }

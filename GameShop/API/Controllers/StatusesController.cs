@@ -20,7 +20,7 @@ namespace API.Controllers
         {
             if (!User.HasClaim("isAdmin", "True"))
             {
-                return Forbid("Invalid permissions. Admin access required.");
+                return Unauthorized(new { message = "Invalid permissions. Admin access required." });
             }
 
             StatusServices service = new StatusServices();
@@ -43,7 +43,7 @@ namespace API.Controllers
         {
             if (!User.HasClaim("isAdmin", "True"))
             {
-                return Forbid("Invalid permissions. Admin access required.");
+                return Unauthorized(new { message = "Invalid permissions. Admin access required." });
             }
 
             StatusServices service = new StatusServices();
@@ -63,7 +63,7 @@ namespace API.Controllers
         {
             if (!User.HasClaim("isAdmin", "True"))
             {
-                return Forbid("Invalid permissions. Admin access required.");
+                return Unauthorized(new { message = "Invalid permissions. Admin access required." });
             }
 
             StatusServices service = new StatusServices();
@@ -89,7 +89,7 @@ namespace API.Controllers
         {
             if (!User.HasClaim("isAdmin", "True"))
             {
-                return Forbid("Invalid permissions. Admin access required.");
+                return Unauthorized(new { message = "Invalid permissions. Admin access required." });
             }
 
             StatusServices service = new StatusServices();
@@ -113,7 +113,7 @@ namespace API.Controllers
         {
             if (!User.HasClaim("isAdmin", "True"))
             {
-                return Forbid("Invalid permissions. Admin access required.");
+                return Unauthorized(new { message = "Invalid permissions. Admin access required." });
             }
 
             StatusServices service = new StatusServices();
@@ -132,16 +132,37 @@ namespace API.Controllers
 
         private StatusResponse MapStatusResponseDTO(Status status)
         {
-            var orderIds = new List<int>();
+            OrderServices orderService = new OrderServices();
+            List<OrderResponse> orders = new List<OrderResponse>();
+
             if (status.Orders != null)
             {
-                orderIds = status.Orders.Select(o => o.Id).ToList();
+                foreach (var order in status.Orders)
+                {
+                    var gameIds = new List<int>();
+                    if (order.OrderGames != null)
+                    {
+                        gameIds = order.OrderGames.Select(og => og.GameId).ToList();
+                    }
+
+                    StatusServices services = new StatusServices();
+                    orders.Add(new OrderResponse()
+                    {
+                        Id = order.Id,
+                        UserId = order.UserId,
+                        TotalPrice = order.TotalPrice,
+                        Status = services.GetStatusName(order.StatusId),
+                        ShippingAddress = order.ShippingAddress,
+                        Games = orderService.GetGameNames(gameIds)
+                    });
+                }
             }
+
             return new StatusResponse()
             {
                 Id = status.Id,
                 Name = status.Name,
-                OrderIds = orderIds
+                Orders = orders
             };
         }
     }

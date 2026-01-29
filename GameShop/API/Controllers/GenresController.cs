@@ -54,7 +54,7 @@ namespace API.Controllers
         {
             if (!User.HasClaim("isAdmin", "True"))
             {
-                return Forbid("Invalid permissions. Admin access required.");
+                return Unauthorized(new { message = "Invalid permissions. Admin access required." });
             }
 
             GenreServices service = new GenreServices();
@@ -80,7 +80,7 @@ namespace API.Controllers
         {
             if (!User.HasClaim("isAdmin", "True"))
             {
-                return Forbid("Invalid permissions. Admin access required.");
+                return Unauthorized(new { message = "Invalid permissions. Admin access required." });
             }
 
             GenreServices service = new GenreServices();
@@ -105,7 +105,7 @@ namespace API.Controllers
         {
             if (!User.HasClaim("isAdmin", "True"))
             {
-                return Forbid("Invalid permissions. Admin access required.");
+                return Unauthorized(new { message = "Invalid permissions. Admin access required." });
             }
 
             GenreServices service = new GenreServices();
@@ -129,11 +129,13 @@ namespace API.Controllers
             {
                 gameIds = genre.Games.Select(g => g.Id).ToList();
             }
+
+            GenreServices service = new GenreServices();
             return new GenreResponse()
             {
                 Id = genre.Id,
                 Name = genre.Name,
-                GameIds = gameIds
+                Games = service.GetGameNames(gameIds)
             };
         }
     }
