@@ -1,0 +1,69 @@
+.usersContainer {
+    width: 100%;
+}
+
+.usersContainer h1 {
+    margin-bottom: 30px;
+}
+
+.usersTable {
+    overflow-x: auto;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background-color: var(--primary-light);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    background-color: var(--primary-lighter);
+    border-bottom: 2px solid var(--accent-color);
+}
+
+th {
+    padding: 15px;
+    text-align: left;
+    font-weight: 600;
+    color: var(--accent-color);
+}
+
+td {
+    padding: 12px 15px;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-light);
+}
+
+tbody tr:hover {
+    background-color: var(--primary-darker);
+}
+
+.userDetail {
+    padding: 20px 0;
+}
+
+.detailRow {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.detailRow strong {
+    color: var(--accent-color);
+}
+
+@media (max-width: 768px) {
+
+    th,
+    td {
+        padding: 10px;
+        font-size: 12px;
+    }
+
+    .usersTable {
+        font-size: 12px;
+    }
+}

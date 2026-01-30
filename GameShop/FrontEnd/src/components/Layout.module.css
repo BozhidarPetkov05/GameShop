@@ -1,0 +1,154 @@
+.layoutContainer {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: var(--primary-dark);
+}
+
+.navbar {
+    background: linear-gradient(90deg, var(--primary-dark) 0%, var(--primary-light) 100%);
+    border-bottom: 2px solid var(--accent-color);
+    padding: 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: var(--shadow);
+}
+
+.navContent {
+    max-width: 1400px;
+    margin: 0 auto;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+}
+
+.logo h1 {
+    margin: 0;
+    color: var(--accent-color);
+    font-size: 24px;
+}
+
+.navMenu {
+    list-style: none;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+}
+
+.navLink {
+    background: none;
+    color: var(--text-light);
+    padding: 8px 16px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.navLink:hover {
+    background-color: var(--primary-lighter);
+    color: white;
+}
+
+.navLink.active {
+    background-color: var(--accent-color);
+    color: white;
+}
+
+.userMenu {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.username {
+    color: var(--text-light);
+    font-weight: 600;
+}
+
+.logoutBtn {
+    background-color: transparent;
+    color: var(--text-light);
+    border: 1px solid var(--text-light);
+    padding: 6px 12px;
+    font-size: 12px;
+}
+
+.logoutBtn:hover {
+    background-color: var(--danger);
+    border-color: var(--danger);
+}
+
+.menuToggle {
+    display: none;
+    background: none;
+    color: var(--text-light);
+    font-size: 24px;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+}
+
+.mainContent {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+@media (max-width: 768px) {
+    .menuToggle {
+        display: block;
+    }
+
+    .navMenu {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background-color: var(--primary-light);
+        flex-direction: column;
+        gap: 0;
+        border-bottom: 1px solid var(--border-color);
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+    }
+
+    .navMenu.active {
+        max-height: 400px;
+    }
+
+    .navLink {
+        width: 100%;
+        text-align: left;
+        border-radius: 0;
+        padding: 12px 20px;
+    }
+
+    .navContent {
+        position: relative;
+    }
+
+    .userMenu {
+        gap: 8px;
+        flex-direction: column;
+    }
+
+    .username {
+        font-size: 12px;
+    }
+
+    .logoutBtn {
+        padding: 4px 8px;
+        font-size: 11px;
+    }
+
+    .mainContent {
+        padding: 15px;
+    }
+}

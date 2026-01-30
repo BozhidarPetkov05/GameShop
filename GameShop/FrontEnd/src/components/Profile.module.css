@@ -1,0 +1,55 @@
+.profileContainer {
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+}
+
+.profileCard {
+    background-color: var(--primary-light);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 40px;
+    width: 100%;
+    max-width: 600px;
+    box-shadow: var(--shadow);
+}
+
+.profileCard h1 {
+    margin-bottom: 30px;
+    color: var(--accent-color);
+}
+
+.profileInfo {
+    padding: 20px 0;
+}
+
+.infoRow {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.infoRow label {
+    font-weight: 600;
+    color: var(--accent-color);
+}
+
+.infoRow span {
+    color: var(--text-light);
+}
+
+.editForm {
+    padding: 20px 0;
+}
+
+@media (max-width: 768px) {
+    .profileCard {
+        padding: 20px;
+    }
+
+    .infoRow {
+        flex-direction: column;
+        gap: 8px;
+    }
+}

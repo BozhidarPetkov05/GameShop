@@ -1,0 +1,91 @@
+.container {
+    width: 100%;
+}
+
+.container h1 {
+    margin-bottom: 30px;
+}
+
+.card {
+    background-color: var(--primary-light);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 102, 204, 0.2);
+}
+
+.card h3 {
+    margin: 0 0 10px 0;
+    color: var(--accent-color);
+}
+
+.card p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--text-light);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.row strong {
+    color: var(--accent-color);
+}
+
+.statusBadge {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.colorDot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.section {
+    margin: 20px 0;
+}
+
+.section strong {
+    color: var(--accent-color);
+    display: block;
+    margin-bottom: 10px;
+}
+
+.section p {
+    margin: 0;
+    color: var(--text-light);
+    line-height: 1.5;
+}
+
+.form {
+    padding: 20px 0;
+}
+
+@media (max-width: 768px) {
+    .card {
+        padding: 15px;
+    }
+
+    .row {
+        flex-direction: column;
+        gap: 8px;
+        align-items: flex-start;
+    }
+}
