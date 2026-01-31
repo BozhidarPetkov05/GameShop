@@ -22,13 +22,13 @@
 
 .card h3 {
     margin: 0 0 10px 0;
-    color: var(--accent-color);
+    color: white;
 }
 
 .card p {
     margin: 0;
     font-size: 13px;
-    color: var(--text-light);
+    color: white;
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
@@ -43,6 +43,10 @@
 
 .row strong {
     color: var(--accent-color);
+}
+
+.row {
+    margin-bottom: 15px;
 }
 
 .statusBadge {
@@ -70,7 +74,7 @@
 
 .section p {
     margin: 0;
-    color: var(--text-light);
+    color: white;
     line-height: 1.5;
 }
 

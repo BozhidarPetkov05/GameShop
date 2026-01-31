@@ -88,6 +88,15 @@ button.btn-success:hover {
     opacity: 0.9;
 }
 
+button.btn-warning {
+    background-color: var(--warning);
+    color: white;
+}
+
+button.btn-warning:hover {
+    opacity: 0.9;
+}
+
 input,
 textarea,
 select {
@@ -250,7 +259,7 @@ label {
 .close-btn {
     background: none;
     border: none;
-    color: var(--text-light);
+    color: #ff4444;
     font-size: 24px;
     cursor: pointer;
     padding: 0;
@@ -259,10 +268,13 @@ label {
     display: flex;
     align-items: center;
     justify-content: center;
+    text-shadow: 0 0 10px rgba(255, 68, 68, 0.8);
+    transition: all 0.3s ease;
 }
 
 .close-btn:hover {
-    color: var(--accent-color);
+    color: #ff0000;
+    text-shadow: 0 0 20px rgba(255, 68, 68, 1), 0 0 30px rgba(255, 68, 68, 0.6);
 }
 
 .button-group {

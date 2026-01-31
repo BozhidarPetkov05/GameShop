@@ -9,7 +9,7 @@ public class GameValidator : AbstractValidator<GameRequest>
 {
     public GameValidator()
     {
-        RuleFor(g => g.Title)
+        RuleFor(g => g.Name)
             .NotEmpty().WithMessage("Title is required!")
             .MinimumLength(3).WithMessage("Title must be at least 3 characters long!")
             .MaximumLength(30).WithMessage("Title cannot exceed 30 characters!");
@@ -23,16 +23,18 @@ public class GameValidator : AbstractValidator<GameRequest>
             .MinimumLength(3).WithMessage("Description must be at least 3 characters long!")
             .MaximumLength(700).WithMessage("Description cannot exceed 700 characters!");
 
-        RuleFor(g => g.Genre)
-            .NotEmpty().WithMessage("Genre is required!");
+        RuleFor(g => g.GenreId)
+            .NotEmpty().WithMessage("Genre is required!")
+            .GreaterThan(0).WithMessage("Genre must be selected!");
 
-        RuleFor(g => g.Company)
-            .NotEmpty().WithMessage("Company is required!");
+        RuleFor(g => g.CompanyId)
+            .NotEmpty().WithMessage("Company is required!")
+            .GreaterThan(0).WithMessage("Company must be selected!");
 
-        RuleFor(g => g.Platforms)
-            .Must(list => list.Count > 0).WithMessage("Select at least one platform!");
+        RuleFor(g => g.PlatformIds)
+            .Must(list => list != null && list.Count > 0).WithMessage("Select at least one platform!");
 
-        RuleFor(g => g.Tags)
-            .Must(list => list.Count > 0).WithMessage("Select at least one tag!");
+        RuleFor(g => g.TagIds)
+            .Must(list => list != null && list.Count > 0).WithMessage("Select at least one tag!");
     }
 }

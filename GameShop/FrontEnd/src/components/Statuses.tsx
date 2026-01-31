@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { statusService } from '../services/statusService';
 import { StatusResponse, StatusRequest } from '../entities';
+import { useAuth } from '../context/AuthContext';
 import styles from './Statuses.module.css';
 
 export const Statuses: React.FC = () => {
@@ -10,6 +11,8 @@ export const Statuses: React.FC = () => {
     const [error, setError] = useState('');
     const [showDetail, setShowDetail] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
+    const [isCreating, setIsCreating] = useState(false);
+    const { isAdmin } = useAuth();
     const [formData, setFormData] = useState<StatusRequest>({
         name: '',
         description: '',
@@ -51,10 +54,19 @@ export const Statuses: React.FC = () => {
             setSelectedItem(data);
             setFormData({ name: data.name, description: data.description });
             setIsEditing(false);
+            setIsCreating(false);
             setShowDetail(true);
         } catch (err) {
             alert(err instanceof Error ? err.message : 'Failed to load details');
         }
+    };
+
+    const handleCreateClick = () => {
+        setSelectedItem(null);
+        setFormData({ name: '', description: '' });
+        setIsCreating(true);
+        setIsEditing(true);
+        setShowDetail(true);
     };
 
     const handleSave = async () => {
@@ -69,17 +81,33 @@ export const Statuses: React.FC = () => {
         }
     };
 
+    const handleCreate = async () => {
+        try {
+            await statusService.createStatus(formData);
+            closeModal();
+            loadItems();
+        } catch (err) {
+            alert(err instanceof Error ? err.message : 'Failed to create');
+        }
+    };
+
     const handleDelete = async () => {
         if (!selectedItem) return;
-        if (!window.confirm('Are you sure?')) return;
 
         try {
             await statusService.deleteStatus(selectedItem.id);
-            setShowDetail(false);
+            closeModal();
             loadItems();
         } catch (err) {
             alert(err instanceof Error ? err.message : 'Failed to delete');
         }
+    };
+
+    const closeModal = () => {
+        setShowDetail(false);
+        setIsCreating(false);
+        setIsEditing(false);
+        setSelectedItem(null);
     };
 
     if (loading) {
@@ -93,7 +121,10 @@ export const Statuses: React.FC = () => {
 
     return (
         <div className={styles.container}>
-            <h1>Statuses</h1>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <h1>Statuses</h1>
+                <button className="btn-success" onClick={handleCreateClick} style={{ marginBottom: '20px' }}>+ Add Status</button>
+            </div>
 
             {error && <div className="error">{error}</div>}
 
@@ -108,22 +139,21 @@ export const Statuses: React.FC = () => {
                         }}
                     >
                         <h3>{item.name}</h3>
-                        <p>{item.description}</p>
                     </div>
                 ))}
             </div>
 
-            {showDetail && selectedItem && (
-                <div className="modal active" onClick={() => setShowDetail(false)}>
+            {showDetail && (selectedItem || isCreating) && (
+                <div className="modal active" onClick={closeModal}>
                     <div
                         className="modal-content"
                         onClick={(e) => e.stopPropagation()}
                     >
                         <div className="modal-header">
-                            <h2>{selectedItem.name}</h2>
+                            <h2>{selectedItem ? selectedItem.name : (isCreating ? 'Add Status' : '')}</h2>
                             <button
                                 className="close-btn"
-                                onClick={() => setShowDetail(false)}
+                                onClick={closeModal}
                             >
                                 ×
                             </button>
@@ -148,13 +178,28 @@ export const Statuses: React.FC = () => {
                                             ></span>
                                         </span>
                                     </div>
+
                                     <div className={styles.section}>
-                                        <strong>Description:</strong>
-                                        <p>{selectedItem.description}</p>
+                                        <strong>Order Ids:</strong>
+                                        <p>
+                                            {selectedItem.orders && selectedItem.orders.length > 0 ? (
+                                                selectedItem.orders.map((o) => `#${o.id}`).join(', ')
+                                            ) : (
+                                                'No orders'
+                                            )}
+                                        </p>
                                     </div>
                                 </div>
 
                                 <div className="button-group">
+                                    {isAdmin && (
+                                        <button
+                                            className="btn-danger"
+                                            onClick={handleDelete}
+                                        >
+                                            Delete
+                                        </button>
+                                    )}
                                     <button
                                         className="btn-primary"
                                         onClick={() => setIsEditing(true)}
@@ -163,7 +208,7 @@ export const Statuses: React.FC = () => {
                                     </button>
                                     <button
                                         className="btn-secondary"
-                                        onClick={() => setShowDetail(false)}
+                                        onClick={closeModal}
                                     >
                                         Close
                                     </button>
@@ -186,42 +231,37 @@ export const Statuses: React.FC = () => {
                                             }
                                         />
                                     </div>
-
-                                    <div className="form-group">
-                                        <label htmlFor="description">Description</label>
-                                        <textarea
-                                            id="description"
-                                            value={formData.description}
-                                            onChange={(e) =>
-                                                setFormData((prev) => ({
-                                                    ...prev,
-                                                    description: e.target.value,
-                                                }))
-                                            }
-                                            rows={4}
-                                        />
-                                    </div>
                                 </div>
 
                                 <div className="button-group">
-                                    <button
-                                        className="btn-success"
-                                        onClick={handleSave}
-                                    >
-                                        Save
-                                    </button>
-                                    <button
-                                        className="btn-danger"
-                                        onClick={handleDelete}
-                                    >
-                                        Delete
-                                    </button>
-                                    <button
-                                        className="btn-secondary"
-                                        onClick={() => setIsEditing(false)}
-                                    >
-                                        Cancel
-                                    </button>
+                                    {isCreating ? (
+                                        <>
+                                            <button className="btn-success" onClick={handleCreate}>
+                                                Create
+                                            </button>
+                                            <button className="btn-secondary" onClick={closeModal}>
+                                                Cancel
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <button className="btn-success" onClick={handleSave}>
+                                                Save
+                                            </button>
+                                            <button
+                                                className="btn-danger"
+                                                onClick={handleDelete}
+                                            >
+                                                Delete
+                                            </button>
+                                            <button
+                                                className="btn-secondary"
+                                                onClick={() => setIsEditing(false)}
+                                            >
+                                                Cancel
+                                            </button>
+                                        </>
+                                    )}
                                 </div>
                             </>
                         )}

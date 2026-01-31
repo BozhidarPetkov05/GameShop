@@ -19,7 +19,8 @@ namespace API.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-            if (!User.HasClaim("isAdmin", "True"))
+            var isAdminClaim = User.FindFirst("isAdmin")?.Value;
+            if (isAdminClaim != "True")
             {
                 return Unauthorized(new { message = "Invalid permissions. Admin access required." });
             }
@@ -43,9 +44,13 @@ namespace API.Controllers
         [Route("{id}")]
         public IActionResult Get([FromRoute] int id)
         {
-            if (!User.HasClaim("loggedUserId", id.ToString()))
+            var isAdmin = User.FindFirst("isAdmin")?.Value == "True";
+            var loggedUserId = User.FindFirst("loggedUserId")?.Value;
+
+            // Allow admins to view any user, or users to view their own profile
+            if (!isAdmin && loggedUserId != id.ToString())
             {
-                return Unauthorized(new { message = "Invalid permissions. Admin access required." });
+                return Unauthorized(new { message = "Invalid permissions." });
             }
 
             UserServices service = new UserServices();
@@ -108,53 +113,56 @@ namespace API.Controllers
         public IActionResult Put([FromRoute] int id, [FromBody] UserRequest model)
         {
             UserServices service = new UserServices();
+            User forUpdate = service.GetById(id);
 
-            if (!User.HasClaim("isAdmin", "True"))
+            if (forUpdate == null)
             {
-                if (User.HasClaim("loggedUserId", id.ToString()))
-                {
-                    User forUpdate = service.GetById(id);
-
-                    if (forUpdate == null)
-                    {
-                        return NotFound("User not found!");
-                    }
-
-                    forUpdate.Username = model.Username;
-                    forUpdate.Email = model.Email;
-                    forUpdate.Password = model.Password;
-                    forUpdate.FirstName = model.FirstName;
-                    forUpdate.LastName = model.LastName;
-
-                    service.Save(forUpdate);
-
-                    UserResponse response = MapUserResponseDTO(forUpdate);
-                    return Ok(response);
-                }
-                else
-                {
-                    return Unauthorized(new { message = "Invalid permissions. Admin access required." });
-                }
+                return NotFound("User not found!");
             }
-            else
+
+            var isAdmin = User.FindFirst("isAdmin")?.Value == "True";
+            var loggedUserId = User.FindFirst("loggedUserId")?.Value;
+
+
+            if (!isAdmin && loggedUserId != id.ToString())
             {
-                User forUpdate = service.GetById(id);
+                return Unauthorized(new { message = "Invalid permissions." });
+            }
 
-                if (forUpdate == null)
-                {
-                    return NotFound("User not found!");
-                }
-
-                forUpdate.Username = model.Username;
+            if (!string.IsNullOrEmpty(model.Email))
+            {
                 forUpdate.Email = model.Email;
-                forUpdate.Password = model.Password;
-                forUpdate.FirstName = model.FirstName;
-                forUpdate.LastName = model.LastName;
-                forUpdate.IsAdmin = model.IsAdmin;
-
-                UserResponse response = MapUserResponseDTO(forUpdate);
-                return Ok(response);
             }
+
+            if (!string.IsNullOrEmpty(model.FirstName))
+            {
+                forUpdate.FirstName = model.FirstName;
+            }
+
+            if (!string.IsNullOrEmpty(model.LastName))
+            {
+                forUpdate.LastName = model.LastName;
+            }
+
+            if (isAdmin)
+            {
+                forUpdate.IsAdmin = model.IsAdmin;
+            }
+
+
+            if (!string.IsNullOrEmpty(model.Password))
+            {
+                forUpdate.Password = model.Password;
+            }
+
+            if (isAdmin && !string.IsNullOrEmpty(model.Username))
+            {
+                forUpdate.Username = model.Username;
+            }
+
+            service.Save(forUpdate);
+            UserResponse response = MapUserResponseDTO(forUpdate);
+            return Ok(response);
         }
 
         [HttpDelete]
@@ -227,6 +235,7 @@ namespace API.Controllers
             return new UserResponse()
             {
                 Id = user.Id,
+                Username = user.Username,
                 Email = user.Email,
                 Password = user.Password,
                 FirstName = user.FirstName,

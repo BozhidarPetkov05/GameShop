@@ -16,7 +16,7 @@
 
 .profileCard h1 {
     margin-bottom: 30px;
-    color: var(--accent-color);
+    color: white;
 }
 
 .profileInfo {
@@ -32,11 +32,17 @@
 
 .infoRow label {
     font-weight: 600;
-    color: var(--accent-color);
+    color: white;
 }
 
 .infoRow span {
-    color: var(--text-light);
+    color: white;
+}
+
+/* Ensure inputs in edit form have visible text */
+.editForm input,
+.editForm textarea {
+    color: white;
 }
 
 .editForm {

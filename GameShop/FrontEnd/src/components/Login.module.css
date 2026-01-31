@@ -3,7 +3,7 @@
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background: linear-gradient(135deg, #001a4d 0%, #003366 100%);
+    background: linear-gradient(135deg, #003366 0%, #000d1a 100%);
     padding: 20px;
 }
 
@@ -18,10 +18,11 @@
 }
 
 .loginBox h1 {
-    color: var(--accent-color);
+    color: #ffffff;
     margin-bottom: 10px;
     text-align: center;
     font-size: 32px;
+    font-weight: bold;
 }
 
 .loginBox p {

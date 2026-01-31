@@ -76,12 +76,6 @@ export const Login: React.FC = () => {
                         {loading ? 'Signing in...' : 'Sign In'}
                     </button>
                 </form>
-
-                <div className={styles.hint}>
-                    <p>Demo credentials:</p>
-                    <p>Username: admin</p>
-                    <p>Password: admin</p>
-                </div>
             </div>
         </div>
     );

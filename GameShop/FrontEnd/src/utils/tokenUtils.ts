@@ -18,14 +18,38 @@ export const decodeToken = (token: string): TokenClaims | null => {
     }
 };
 
+// Check if token is expired
+export const isTokenExpired = (token: string): boolean => {
+    try {
+        const parts = token.split('.');
+        if (parts.length !== 3) return true;
+
+        const decoded = JSON.parse(atob(parts[1]));
+        const exp = decoded.exp;
+
+        if (!exp) return false; // No expiration claim, assume valid
+
+        const currentTime = Math.floor(Date.now() / 1000);
+        return exp < currentTime;
+    } catch (error) {
+        console.error('Error checking token expiration:', error);
+        return true;
+    }
+};
+
 // Save token to localStorage
 export const saveToken = (token: string): void => {
     localStorage.setItem('authToken', token);
 };
 
-// Get token from localStorage
+// Get token from localStorage (returns null if expired)
 export const getToken = (): string | null => {
-    return localStorage.getItem('authToken');
+    const token = localStorage.getItem('authToken');
+    if (token && isTokenExpired(token)) {
+        removeToken();
+        return null;
+    }
+    return token;
 };
 
 // Remove token from localStorage

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { userService } from '../services/userService';
-import { UserResponse } from '../entities';
+import { UserResponse, UserRequest } from '../entities';
 import styles from './Users.module.css';
 
 export const Users: React.FC = () => {
@@ -9,6 +9,8 @@ export const Users: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [showDetail, setShowDetail] = useState(false);
+    const [showEdit, setShowEdit] = useState(false);
+    const [editForm, setEditForm] = useState<any>({});
 
     useEffect(() => {
         loadUsers();
@@ -34,6 +36,42 @@ export const Users: React.FC = () => {
             setShowDetail(true);
         } catch (err) {
             alert(err instanceof Error ? err.message : 'Failed to load user details');
+        }
+    };
+
+    const handleEditClick = (user: UserResponse) => {
+        setSelectedUser(user);
+        setEditForm({
+            username: user.username,
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            isAdmin: user.isAdmin,
+            password: (user as any).password || ''
+        });
+        setShowEdit(true);
+    };
+
+    const handleDeleteUser = async (userId: number) => {
+        try {
+            await userService.deleteUser(userId);
+            setUsers(users.filter(u => u.id !== userId));
+            setShowDetail(false);
+        } catch (err) {
+            alert(err instanceof Error ? err.message : 'Failed to delete user');
+        }
+    };
+
+    const handleSaveEdit = async () => {
+        if (!selectedUser) return;
+        try {
+            await userService.updateUser(selectedUser.id, editForm as UserRequest);
+            // Reload users list
+            await loadUsers();
+            setShowEdit(false);
+            setShowDetail(false);
+        } catch (err) {
+            alert(err instanceof Error ? err.message : 'Failed to update user');
         }
     };
 
@@ -77,10 +115,24 @@ export const Users: React.FC = () => {
                                 <td>
                                     <button
                                         className="btn-primary"
-                                        style={{ padding: '4px 8px', fontSize: '12px' }}
+                                        style={{ padding: '4px 8px', fontSize: '12px', marginRight: '5px' }}
                                         onClick={() => handleUserClick(user)}
                                     >
                                         View
+                                    </button>
+                                    <button
+                                        className="btn-primary"
+                                        style={{ padding: '4px 8px', fontSize: '12px', marginRight: '5px' }}
+                                        onClick={() => handleEditClick(user)}
+                                    >
+                                        Edit
+                                    </button>
+                                    <button
+                                        className="btn-danger"
+                                        style={{ padding: '4px 8px', fontSize: '12px' }}
+                                        onClick={() => handleDeleteUser(user.id)}
+                                    >
+                                        Delete
                                     </button>
                                 </td>
                             </tr>
@@ -139,6 +191,94 @@ export const Users: React.FC = () => {
                                 onClick={() => setShowDetail(false)}
                             >
                                 Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* User Edit Modal */}
+            {showEdit && selectedUser && (
+                <div className="modal active" onClick={() => setShowEdit(false)}>
+                    <div
+                        className="modal-content"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="modal-header">
+                            <h2>Edit User</h2>
+                            <button
+                                className="close-btn"
+                                onClick={() => setShowEdit(false)}
+                            >
+                                ×
+                            </button>
+                        </div>
+
+                        <div className={styles.editForm}>
+                            <div className={styles.formGroup}>
+                                <label>Username</label>
+                                <input
+                                    type="text"
+                                    value={editForm.username || ''}
+                                    onChange={(e) => setEditForm({ ...editForm, username: e.target.value })}
+                                />
+                            </div>
+                            <div className={styles.formGroup}>
+                                <label>Email</label>
+                                <input
+                                    type="email"
+                                    value={editForm.email || ''}
+                                    onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+                                />
+                            </div>
+                            <div className={styles.formGroup}>
+                                <label>First Name</label>
+                                <input
+                                    type="text"
+                                    value={editForm.firstName || ''}
+                                    onChange={(e) => setEditForm({ ...editForm, firstName: e.target.value })}
+                                />
+                            </div>
+                            <div className={styles.formGroup}>
+                                <label>Password</label>
+                                <input
+                                    type="password"
+                                    value={editForm.password || ''}
+                                    onChange={(e) => setEditForm({ ...editForm, password: e.target.value })}
+                                />
+                            </div>
+                            <div className={styles.formGroup}>
+                                <label>Last Name</label>
+                                <input
+                                    type="text"
+                                    value={editForm.lastName || ''}
+                                    onChange={(e) => setEditForm({ ...editForm, lastName: e.target.value })}
+                                />
+                            </div>
+                            <div className={styles.formGroup}>
+                                <label>
+                                    <input
+                                        type="checkbox"
+                                        checked={editForm.isAdmin || false}
+                                        onChange={(e) => setEditForm({ ...editForm, isAdmin: e.target.checked })}
+                                    />
+                                    Admin
+                                </label>
+                            </div>
+                        </div>
+
+                        <div className="button-group">
+                            <button
+                                className="btn-primary"
+                                onClick={handleSaveEdit}
+                            >
+                                Save
+                            </button>
+                            <button
+                                className="btn-secondary"
+                                onClick={() => setShowEdit(false)}
+                            >
+                                Cancel
                             </button>
                         </div>
                     </div>

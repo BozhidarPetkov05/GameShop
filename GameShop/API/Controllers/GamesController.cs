@@ -59,45 +59,40 @@ namespace API.Controllers
             }
 
             GameServices service = new GameServices();
-            if (service.GameExist(model.Title))
+            if (service.GameExist(model.Name))
             {
                 return BadRequest("Game with this title already exists!");
             }
 
-            int genreId = service.GetGenreId(model.Genre);
-            int companyId = service.GetCompanyId(model.Company);
-            List<int> platformIds = service.GetPlatformIds(model.Platforms);
-            List<int> tagIds = service.GetTagIds(model.Tags);
-
-            if (genreId == 0)
+            if (model.GenreId <= 0)
             {
-                return BadRequest("No genre with this name!");
+                return BadRequest("Genre is required!");
             }
-            if (companyId == 0)
+            if (model.CompanyId <= 0)
             {
-                return BadRequest("No company with this name!");
+                return BadRequest("Company is required!");
             }
-            if (platformIds == null || platformIds.Count == 0)
+            if (model.PlatformIds == null || model.PlatformIds.Count == 0)
             {
-                return BadRequest("No platforms with this name");
+                return BadRequest("Platforms are required!");
             }
-            if (tagIds == null || tagIds.Count == 0)
+            if (model.TagIds == null || model.TagIds.Count == 0)
             {
-                return BadRequest("No tags with this name");
+                return BadRequest("Tags are required!");
             }
 
             var item = new Game()
             {
-                Title = model.Title,
+                Title = model.Name,
                 Price = model.Price,
                 Description = model.Description,
-                GenreId = genreId,
-                CompanyId = companyId,
+                GenreId = model.GenreId,
+                CompanyId = model.CompanyId,
             };
 
             service.Save(item);
 
-            foreach (var platformId in platformIds)
+            foreach (var platformId in model.PlatformIds)
             {
                 var gamePlatform = new GamePlatform()
                 {
@@ -107,7 +102,7 @@ namespace API.Controllers
                 service.SaveGamePlatform(gamePlatform);
             }
 
-            foreach (var tagId in tagIds)
+            foreach (var tagId in model.TagIds)
             {
                 var gameTag = new GameTag()
                 {
@@ -142,35 +137,30 @@ namespace API.Controllers
             service.DeleteGamePlatformsByGameId(forUpdate.Id);
             service.DeleteGameTagsByGameId(forUpdate.Id);
 
-            int genreId = service.GetGenreId(model.Genre);
-            int companyId = service.GetCompanyId(model.Company);
-            List<int> platformIds = service.GetPlatformIds(model.Platforms);
-            List<int> tagIds = service.GetTagIds(model.Tags);
-
-            if (genreId == 0)
+            if (model.GenreId <= 0)
             {
-                return BadRequest("No genre with this name!");
+                return BadRequest("Genre is required!");
             }
-            if (companyId == 0)
+            if (model.CompanyId <= 0)
             {
-                return BadRequest("No company with this name!");
+                return BadRequest("Company is required!");
             }
-            if (platformIds == null || platformIds.Count == 0)
+            if (model.PlatformIds == null || model.PlatformIds.Count == 0)
             {
-                return BadRequest("No platforms with this name");
+                return BadRequest("Platforms are required!");
             }
-            if (tagIds == null || tagIds.Count == 0)
+            if (model.TagIds == null || model.TagIds.Count == 0)
             {
-                return BadRequest("No tags with this name");
+                return BadRequest("Tags are required!");
             }
 
-            forUpdate.Title = model.Title;
+            forUpdate.Title = model.Name;
             forUpdate.Price = model.Price;
             forUpdate.Description = model.Description;
-            forUpdate.GenreId = genreId;
-            forUpdate.CompanyId = companyId;
+            forUpdate.GenreId = model.GenreId;
+            forUpdate.CompanyId = model.CompanyId;
 
-            foreach (var platformId in platformIds)
+            foreach (var platformId in model.PlatformIds)
             {
                 var gamePlatform = new GamePlatform()
                 {
@@ -180,7 +170,7 @@ namespace API.Controllers
                 service.SaveGamePlatform(gamePlatform);
             }
 
-            foreach (var tagId in tagIds)
+            foreach (var tagId in model.TagIds)
             {
                 var gameTag = new GameTag()
                 {

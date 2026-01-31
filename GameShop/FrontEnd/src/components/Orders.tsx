@@ -21,19 +21,18 @@ export const Orders: React.FC = () => {
 
     useEffect(() => {
         loadOrders();
-        loadStatuses();
-    }, []);
+        if (isAdmin) {
+            loadStatuses();
+        }
+    }, [isAdmin]);
 
     const loadOrders = async () => {
         try {
             setLoading(true);
             setError('');
             const data = await orderService.getAllOrders();
-            // Filter orders for non-admin users
-            const filteredOrders = isAdmin
-                ? data
-                : data.filter((o) => o.userId === userClaims?.loggedUserId);
-            setOrders(filteredOrders);
+            // Backend already filters orders by userId for non-admins
+            setOrders(data);
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Failed to load orders');
         } finally {
@@ -107,7 +106,6 @@ export const Orders: React.FC = () => {
 
     const handleDelete = async () => {
         if (!selectedOrder) return;
-        if (!window.confirm('Are you sure?')) return;
 
         try {
             await orderService.deleteOrder(selectedOrder.id);

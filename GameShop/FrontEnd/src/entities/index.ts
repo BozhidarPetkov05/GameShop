@@ -60,6 +60,7 @@ export interface PlatformResponse {
     id: number;
     name: string;
     description: string;
+    games?: string[];
 }
 
 export interface PlatformRequest {
@@ -72,6 +73,7 @@ export interface GenreResponse {
     id: number;
     name: string;
     description: string;
+    games?: string[];
 }
 
 export interface GenreRequest {
@@ -85,6 +87,7 @@ export interface CompanyResponse {
     name: string;
     description: string;
     foundedYear: number;
+    games?: string[];
 }
 
 export interface CompanyRequest {
@@ -93,11 +96,13 @@ export interface CompanyRequest {
     foundedYear: number;
 }
 
+
 // Tags
 export interface TagResponse {
     id: number;
     name: string;
     description: string;
+    games?: string[];
 }
 
 export interface TagRequest {
@@ -109,12 +114,13 @@ export interface TagRequest {
 export interface StatusResponse {
     id: number;
     name: string;
-    description: string;
+    description?: string;
+    orders?: OrderResponse[];
 }
 
 export interface StatusRequest {
     name: string;
-    description: string;
+    description?: string;
 }
 
 // Orders

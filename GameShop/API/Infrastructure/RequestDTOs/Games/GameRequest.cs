@@ -5,13 +5,12 @@ namespace API.Infrastructure.RequestDTOs.Games;
 
 public class GameRequest
 {
-    public string Title { get; set; }
+    public string Name { get; set; }
     public decimal Price { get; set; }
     public string Description { get; set; }
-    public string Genre { get; set; }
-    public string Company { get; set; }
-
-    public List<string> Platforms { get; set; }
-    public List<string> Tags { get; set; }
-
+    public int GenreId { get; set; }
+    public int CompanyId { get; set; }
+    public List<int> PlatformIds { get; set; }
+    public List<int> TagIds { get; set; }
+    public string ReleaseDate { get; set; }
 }

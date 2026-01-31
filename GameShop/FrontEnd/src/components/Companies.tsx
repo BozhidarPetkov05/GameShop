@@ -11,6 +11,7 @@ export const Companies: React.FC = () => {
     const [error, setError] = useState('');
     const [showDetail, setShowDetail] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
+    const [showAddModal, setShowAddModal] = useState(false);
     const [formData, setFormData] = useState<CompanyRequest>({
         name: '',
         description: '',
@@ -65,7 +66,6 @@ export const Companies: React.FC = () => {
 
     const handleDelete = async () => {
         if (!selectedItem) return;
-        if (!window.confirm('Are you sure?')) return;
 
         try {
             await companyService.deleteCompany(selectedItem.id);
@@ -73,6 +73,37 @@ export const Companies: React.FC = () => {
             loadItems();
         } catch (err) {
             alert(err instanceof Error ? err.message : 'Failed to delete');
+        }
+    };
+
+    const handleDeleteFromCard = async (e: React.MouseEvent, companyId: number) => {
+        e.stopPropagation();
+
+        try {
+            await companyService.deleteCompany(companyId);
+            loadItems();
+        } catch (err) {
+            alert(err instanceof Error ? err.message : 'Failed to delete');
+        }
+    };
+
+    const handleOpenAddModal = () => {
+        setFormData({ name: '', description: '', foundedYear: new Date().getFullYear() });
+        setShowAddModal(true);
+    };
+
+    const handleSaveAdd = async () => {
+        if (!formData.name.trim()) {
+            alert('Company name is required');
+            return;
+        }
+
+        try {
+            await companyService.createCompany(formData);
+            setShowAddModal(false);
+            loadItems();
+        } catch (err) {
+            alert(err instanceof Error ? err.message : 'Failed to create company');
         }
     };
 
@@ -91,18 +122,41 @@ export const Companies: React.FC = () => {
 
             {error && <div className="error">{error}</div>}
 
+            {isAdmin && (
+                <button
+                    className="btn-success"
+                    onClick={handleOpenAddModal}
+                    style={{ marginBottom: '20px' }}
+                >
+                    + Add Company
+                </button>
+            )}
+
             <div className="grid grid-3">
                 {items.map((item) => (
                     <div
                         key={item.id}
                         className={styles.card}
                         onClick={() => handleItemClick(item)}
+                        style={{ position: 'relative' }}
                     >
                         <h3>{item.name}</h3>
                         <p>{item.description}</p>
-                        <p style={{ fontSize: '12px', marginTop: '10px', color: '#999' }}>
-                            Founded: {item.foundedYear}
-                        </p>
+                        {isAdmin && (
+                            <button
+                                className="btn-danger"
+                                onClick={(e) => handleDeleteFromCard(e, item.id)}
+                                style={{
+                                    position: 'absolute',
+                                    top: '10px',
+                                    right: '10px',
+                                    padding: '4px 8px',
+                                    fontSize: '12px',
+                                }}
+                            >
+                                Delete
+                            </button>
+                        )}
                     </div>
                 ))}
             </div>
@@ -134,14 +188,18 @@ export const Companies: React.FC = () => {
                                         <strong>Name:</strong>
                                         <span>{selectedItem.name}</span>
                                     </div>
-                                    <div className={styles.row}>
-                                        <strong>Founded Year:</strong>
-                                        <span>{selectedItem.foundedYear}</span>
-                                    </div>
-                                    <div className={styles.section}>
-                                        <strong>Description:</strong>
-                                        <p>{selectedItem.description}</p>
-                                    </div>
+                                    {selectedItem.games && selectedItem.games.length > 0 && (
+                                        <div className={styles.section}>
+                                            <strong>Games:</strong>
+                                            <div style={{ marginTop: '10px' }}>
+                                                {selectedItem.games.map((game, index) => (
+                                                    <div key={index} style={{ padding: '5px 0', borderBottom: '1px solid var(--border-color)' }}>
+                                                        {game}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
 
                                 <div className="button-group">
@@ -178,36 +236,6 @@ export const Companies: React.FC = () => {
                                             }
                                         />
                                     </div>
-
-                                    <div className="form-group">
-                                        <label htmlFor="foundedYear">Founded Year</label>
-                                        <input
-                                            id="foundedYear"
-                                            type="number"
-                                            value={formData.foundedYear}
-                                            onChange={(e) =>
-                                                setFormData((prev) => ({
-                                                    ...prev,
-                                                    foundedYear: parseInt(e.target.value),
-                                                }))
-                                            }
-                                        />
-                                    </div>
-
-                                    <div className="form-group">
-                                        <label htmlFor="description">Description</label>
-                                        <textarea
-                                            id="description"
-                                            value={formData.description}
-                                            onChange={(e) =>
-                                                setFormData((prev) => ({
-                                                    ...prev,
-                                                    description: e.target.value,
-                                                }))
-                                            }
-                                            rows={4}
-                                        />
-                                    </div>
                                 </div>
 
                                 <div className="button-group">
@@ -232,6 +260,58 @@ export const Companies: React.FC = () => {
                                 </div>
                             </>
                         )}
+                    </div>
+                </div>
+            )}
+
+            {/* Add Company Modal */}
+            {showAddModal && (
+                <div className="modal active" onClick={() => setShowAddModal(false)}>
+                    <div
+                        className="modal-content"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="modal-header">
+                            <h2>Add New Company</h2>
+                            <button
+                                className="close-btn"
+                                onClick={() => setShowAddModal(false)}
+                            >
+                                ×
+                            </button>
+                        </div>
+
+                        <div className={styles.form}>
+                            <div className="form-group">
+                                <label htmlFor="addName">Name</label>
+                                <input
+                                    id="addName"
+                                    type="text"
+                                    value={formData.name}
+                                    onChange={(e) =>
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            name: e.target.value,
+                                        }))
+                                    }
+                                />
+                            </div>
+                        </div>
+
+                        <div className="button-group">
+                            <button
+                                className="btn-success"
+                                onClick={handleSaveAdd}
+                            >
+                                Create
+                            </button>
+                            <button
+                                className="btn-secondary"
+                                onClick={() => setShowAddModal(false)}
+                            >
+                                Cancel
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}

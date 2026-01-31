@@ -7,6 +7,7 @@ interface CartContextType {
     removeFromCart: (gameId: number) => void;
     clearCart: () => void;
     getCartTotal: () => number;
+    isGameInCart: (gameId: number) => boolean;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -40,8 +41,12 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return cart.reduce((total, item) => total + item.game.price * item.quantity, 0);
     }, [cart]);
 
+    const isGameInCart = useCallback((gameId: number) => {
+        return cart.some((item) => item.gameId === gameId);
+    }, [cart]);
+
     return (
-        <CartContext.Provider value={{ cart, addToCart, removeFromCart, clearCart, getCartTotal }}>
+        <CartContext.Provider value={{ cart, addToCart, removeFromCart, clearCart, getCartTotal, isGameInCart }}>
             {children}
         </CartContext.Provider>
     );

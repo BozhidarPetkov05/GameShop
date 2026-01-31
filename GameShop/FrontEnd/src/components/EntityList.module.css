@@ -23,7 +23,7 @@
 
 .card h3 {
     margin: 0 0 10px 0;
-    color: var(--accent-color);
+    color: white;
 }
 
 .card p {
@@ -41,8 +41,29 @@
     border-bottom: 1px solid var(--border-color);
 }
 
+.row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 15px;
+}
+
 .row strong {
     color: var(--accent-color);
+}
+
+.row span {
+    color: white;
+}
+
+.detail {
+    padding: 20px 0;
+    color: white;
+}
+
+.detail div {
+    color: white;
 }
 
 .section {
@@ -57,8 +78,12 @@
 
 .section p {
     margin: 0;
-    color: var(--text-light);
+    color: white;
     line-height: 1.5;
+}
+
+.section div {
+    color: white;
 }
 
 .form {

@@ -66,6 +66,7 @@ export const Profile: React.FC = () => {
                 email: formData.email,
                 firstName: formData.firstName,
                 lastName: formData.lastName,
+                isAdmin: user.isAdmin,
             };
 
             if (formData.password) {
@@ -128,7 +129,7 @@ export const Profile: React.FC = () => {
                             </div>
                             <div className={styles.infoRow}>
                                 <label>Email:</label>
-                                <span>{user.email}</span>
+                                <span>{user.email ?? formData.email ?? 'No email'}</span>
                             </div>
                             <div className={styles.infoRow}>
                                 <label>First Name:</label>
@@ -142,6 +143,7 @@ export const Profile: React.FC = () => {
                                 <label>Admin:</label>
                                 <span>{user.isAdmin ? 'Yes' : 'No'}</span>
                             </div>
+
                         </div>
 
                         <div className="button-group" style={{ marginTop: '30px' }}>

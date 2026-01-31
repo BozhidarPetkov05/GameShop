@@ -49,10 +49,53 @@ tbody tr:hover {
     justify-content: space-between;
     padding: 12px 0;
     border-bottom: 1px solid var(--border-color);
+    margin-bottom: 15px;
 }
 
 .detailRow strong {
     color: var(--accent-color);
+}
+
+.detailRow span {
+    color: white;
+}
+
+.editForm {
+    padding: 20px 0;
+}
+
+.formGroup {
+    margin-bottom: 20px;
+}
+
+.formGroup label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--accent-color);
+    font-weight: 600;
+}
+
+.formGroup input[type="text"],
+.formGroup input[type="email"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background-color: var(--primary-darker);
+    color: white;
+    font-size: 14px;
+}
+
+.formGroup input[type="text"]:focus,
+.formGroup input[type="email"]:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 5px rgba(0, 102, 204, 0.3);
+}
+
+.formGroup input[type="checkbox"] {
+    margin-right: 8px;
+    cursor: pointer;
 }
 
 @media (max-width: 768px) {

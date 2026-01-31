@@ -11,6 +11,7 @@ export const Genres: React.FC = () => {
     const [error, setError] = useState('');
     const [showDetail, setShowDetail] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
+    const [showAddModal, setShowAddModal] = useState(false);
     const [formData, setFormData] = useState<GenreRequest>({
         name: '',
         description: '',
@@ -60,7 +61,6 @@ export const Genres: React.FC = () => {
 
     const handleDelete = async () => {
         if (!selectedItem) return;
-        if (!window.confirm('Are you sure?')) return;
 
         try {
             await genreService.deleteGenre(selectedItem.id);
@@ -68,6 +68,37 @@ export const Genres: React.FC = () => {
             loadItems();
         } catch (err) {
             alert(err instanceof Error ? err.message : 'Failed to delete');
+        }
+    };
+
+    const handleDeleteFromCard = async (e: React.MouseEvent, genreId: number) => {
+        e.stopPropagation();
+
+        try {
+            await genreService.deleteGenre(genreId);
+            loadItems();
+        } catch (err) {
+            alert(err instanceof Error ? err.message : 'Failed to delete');
+        }
+    };
+
+    const handleOpenAddModal = () => {
+        setFormData({ name: '', description: '' });
+        setShowAddModal(true);
+    };
+
+    const handleSaveAdd = async () => {
+        if (!formData.name.trim()) {
+            alert('Genre name is required');
+            return;
+        }
+
+        try {
+            await genreService.createGenre(formData);
+            setShowAddModal(false);
+            loadItems();
+        } catch (err) {
+            alert(err instanceof Error ? err.message : 'Failed to create genre');
         }
     };
 
@@ -86,15 +117,41 @@ export const Genres: React.FC = () => {
 
             {error && <div className="error">{error}</div>}
 
+            {isAdmin && (
+                <button
+                    className="btn-success"
+                    onClick={handleOpenAddModal}
+                    style={{ marginBottom: '20px' }}
+                >
+                    + Add Genre
+                </button>
+            )}
+
             <div className="grid grid-3">
                 {items.map((item) => (
                     <div
                         key={item.id}
                         className={styles.card}
                         onClick={() => handleItemClick(item)}
+                        style={{ position: 'relative' }}
                     >
                         <h3>{item.name}</h3>
                         <p>{item.description}</p>
+                        {isAdmin && (
+                            <button
+                                className="btn-danger"
+                                onClick={(e) => handleDeleteFromCard(e, item.id)}
+                                style={{
+                                    position: 'absolute',
+                                    top: '10px',
+                                    right: '10px',
+                                    padding: '4px 8px',
+                                    fontSize: '12px',
+                                }}
+                            >
+                                Delete
+                            </button>
+                        )}
                     </div>
                 ))}
             </div>
@@ -126,10 +183,18 @@ export const Genres: React.FC = () => {
                                         <strong>Name:</strong>
                                         <span>{selectedItem.name}</span>
                                     </div>
-                                    <div className={styles.section}>
-                                        <strong>Description:</strong>
-                                        <p>{selectedItem.description}</p>
-                                    </div>
+                                    {selectedItem.games && selectedItem.games.length > 0 && (
+                                        <div className={styles.section}>
+                                            <strong>Games:</strong>
+                                            <div style={{ marginTop: '10px' }}>
+                                                {selectedItem.games.map((game, index) => (
+                                                    <div key={index} style={{ padding: '5px 0', borderBottom: '1px solid var(--border-color)' }}>
+                                                        {game}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
 
                                 <div className="button-group">
@@ -166,21 +231,6 @@ export const Genres: React.FC = () => {
                                             }
                                         />
                                     </div>
-
-                                    <div className="form-group">
-                                        <label htmlFor="description">Description</label>
-                                        <textarea
-                                            id="description"
-                                            value={formData.description}
-                                            onChange={(e) =>
-                                                setFormData((prev) => ({
-                                                    ...prev,
-                                                    description: e.target.value,
-                                                }))
-                                            }
-                                            rows={4}
-                                        />
-                                    </div>
                                 </div>
 
                                 <div className="button-group">
@@ -205,6 +255,58 @@ export const Genres: React.FC = () => {
                                 </div>
                             </>
                         )}
+                    </div>
+                </div>
+            )}
+
+            {/* Add Genre Modal */}
+            {showAddModal && (
+                <div className="modal active" onClick={() => setShowAddModal(false)}>
+                    <div
+                        className="modal-content"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="modal-header">
+                            <h2>Add New Genre</h2>
+                            <button
+                                className="close-btn"
+                                onClick={() => setShowAddModal(false)}
+                            >
+                                ×
+                            </button>
+                        </div>
+
+                        <div className={styles.form}>
+                            <div className="form-group">
+                                <label htmlFor="addName">Name</label>
+                                <input
+                                    id="addName"
+                                    type="text"
+                                    value={formData.name}
+                                    onChange={(e) =>
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            name: e.target.value,
+                                        }))
+                                    }
+                                />
+                            </div>
+                        </div>
+
+                        <div className="button-group">
+                            <button
+                                className="btn-success"
+                                onClick={handleSaveAdd}
+                            >
+                                Create
+                            </button>
+                            <button
+                                className="btn-secondary"
+                                onClick={() => setShowAddModal(false)}
+                            >
+                                Cancel
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
