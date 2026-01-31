@@ -51,7 +51,6 @@ export const Genres: React.FC = () => {
 
         try {
             await genreService.updateGenre(selectedItem.id, formData);
-            alert('Genre updated successfully!');
             setShowDetail(false);
             loadItems();
         } catch (err) {
@@ -65,7 +64,6 @@ export const Genres: React.FC = () => {
 
         try {
             await genreService.deleteGenre(selectedItem.id);
-            alert('Genre deleted successfully!');
             setShowDetail(false);
             loadItems();
         } catch (err) {

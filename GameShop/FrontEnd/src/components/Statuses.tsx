@@ -62,7 +62,6 @@ export const Statuses: React.FC = () => {
 
         try {
             await statusService.updateStatus(selectedItem.id, formData);
-            alert('Status updated successfully!');
             setShowDetail(false);
             loadItems();
         } catch (err) {
@@ -76,7 +75,6 @@ export const Statuses: React.FC = () => {
 
         try {
             await statusService.deleteStatus(selectedItem.id);
-            alert('Status deleted successfully!');
             setShowDetail(false);
             loadItems();
         } catch (err) {

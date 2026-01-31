@@ -56,7 +56,6 @@ export const Companies: React.FC = () => {
 
         try {
             await companyService.updateCompany(selectedItem.id, formData);
-            alert('Company updated successfully!');
             setShowDetail(false);
             loadItems();
         } catch (err) {
@@ -70,7 +69,6 @@ export const Companies: React.FC = () => {
 
         try {
             await companyService.deleteCompany(selectedItem.id);
-            alert('Company deleted successfully!');
             setShowDetail(false);
             loadItems();
         } catch (err) {

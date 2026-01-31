@@ -18,6 +18,14 @@ table {
     border-collapse: collapse;
 }
 
+tbody {
+    background-color: var(--primary-light);
+}
+
+tbody td {
+    color: #ffffff !important;
+}
+
 thead {
     background-color: var(--primary-lighter);
     border-bottom: 2px solid var(--accent-color);
@@ -27,13 +35,14 @@ th {
     padding: 15px;
     text-align: left;
     font-weight: 600;
-    color: var(--accent-color);
+    color: #ffffff !important;
 }
 
 td {
     padding: 12px 15px;
     border-bottom: 1px solid var(--border-color);
-    color: var(--text-light);
+    color: #ffffff !important;
+    font-weight: 500;
 }
 
 tbody tr:hover {

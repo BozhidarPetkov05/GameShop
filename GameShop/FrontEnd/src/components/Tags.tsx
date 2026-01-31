@@ -51,7 +51,6 @@ export const Tags: React.FC = () => {
 
         try {
             await tagService.updateTag(selectedItem.id, formData);
-            alert('Tag updated successfully!');
             setShowDetail(false);
             loadItems();
         } catch (err) {
@@ -65,7 +64,6 @@ export const Tags: React.FC = () => {
 
         try {
             await tagService.deleteTag(selectedItem.id);
-            alert('Tag deleted successfully!');
             setShowDetail(false);
             loadItems();
         } catch (err) {

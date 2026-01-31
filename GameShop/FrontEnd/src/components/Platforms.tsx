@@ -51,7 +51,6 @@ export const Platforms: React.FC = () => {
 
         try {
             await platformService.updatePlatform(selectedItem.id, formData);
-            alert('Platform updated successfully!');
             setShowDetail(false);
             loadItems();
         } catch (err) {
@@ -65,7 +64,6 @@ export const Platforms: React.FC = () => {
 
         try {
             await platformService.deletePlatform(selectedItem.id);
-            alert('Platform deleted successfully!');
             setShowDetail(false);
             loadItems();
         } catch (err) {

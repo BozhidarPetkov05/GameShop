@@ -38,7 +38,7 @@ builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 var app = builder.Build();
 
 app.UseCors();
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection(); // Disabled for development to allow HTTP connections
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

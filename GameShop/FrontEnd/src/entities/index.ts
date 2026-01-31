@@ -35,16 +35,13 @@ export interface UserRequest {
 // Games
 export interface GameResponse {
     id: number;
-    name: string;
+    title: string;
     description: string;
     price: number;
-    companyId: number;
-    company?: CompanyResponse;
-    genreId: number;
-    genre?: GenreResponse;
-    tags?: TagResponse[];
-    platforms?: PlatformResponse[];
-    releaseDate: string;
+    genre?: string;
+    company?: string;
+    tags?: string[];
+    platforms?: string[];
 }
 
 export interface GameRequest {
@@ -125,15 +122,17 @@ export interface OrderResponse {
     id: number;
     userId: number;
     statusId: number;
-    status?: StatusResponse;
+    status: string;
     shippingAddress: string;
-    createdDate: string;
-    games?: OrderGameResponse[];
+    createdDate?: string;
+    games?: (string | OrderGameResponse)[];
+    totalPrice?: number;
 }
 
 export interface OrderRequest {
     shippingAddress: string;
-    gameIds: number[];
+    games: string[];
+    status?: string;
 }
 
 export interface OrderEditRequest {

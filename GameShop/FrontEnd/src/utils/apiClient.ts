@@ -21,16 +21,21 @@ export const apiCall = async <T>(
         const token = getToken();
         if (token) {
             headers['Authorization'] = `Bearer ${token}`;
+        } else {
+            console.warn('No token found for authenticated request to', endpoint);
         }
     }
 
-    const response = await fetch(`https://localhost:5000${endpoint}`, {
+    console.log('API Request:', endpoint, 'Headers:', headers, 'Options:', fetchOptions);
+
+    const response = await fetch(`http://localhost:5001${endpoint}`, {
         ...fetchOptions,
         headers,
     });
 
     if (!response.ok) {
         const error = await response.text().catch(() => 'Unknown error');
+        console.error(`API Error: ${response.status}`, error);
         throw new Error(`API Error: ${response.status} - ${error}`);
     }
 

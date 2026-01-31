@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { orderService } from '../services/orderService';
 import { statusService } from '../services/statusService';
-import { OrderResponse, StatusResponse, OrderEditRequest } from '../entities';
+import { OrderResponse, StatusResponse, OrderRequest } from '../entities';
 import { useAuth } from '../context/AuthContext';
 import styles from './Orders.module.css';
 
@@ -82,19 +82,25 @@ export const Orders: React.FC = () => {
         if (!selectedOrder) return;
 
         try {
-            const updateData: OrderEditRequest = {
+            // Send OrderRequest format with games from current order
+            const updateData: OrderRequest = {
                 shippingAddress: editFormData.shippingAddress,
+                games: (selectedOrder.games || []).filter((g) => typeof g === 'string') as string[],
             };
 
-            if (isAdmin && editFormData.statusId) {
-                updateData.statusId = editFormData.statusId;
+            // If admin and status changed, include the status
+            if (isAdmin && editFormData.statusId && editFormData.statusId !== selectedOrder.statusId) {
+                const selectedStatus = statuses.find((s) => s.id === editFormData.statusId);
+                if (selectedStatus) {
+                    updateData.status = selectedStatus.name;
+                }
             }
 
             await orderService.updateOrder(selectedOrder.id, updateData);
-            alert('Order updated successfully!');
             setShowDetail(false);
             loadOrders();
         } catch (err) {
+            console.error('Update error:', err);
             alert(err instanceof Error ? err.message : 'Failed to update order');
         }
     };
@@ -105,7 +111,6 @@ export const Orders: React.FC = () => {
 
         try {
             await orderService.deleteOrder(selectedOrder.id);
-            alert('Order deleted successfully!');
             setShowDetail(false);
             loadOrders();
         } catch (err) {
@@ -138,7 +143,6 @@ export const Orders: React.FC = () => {
                         <thead>
                             <tr>
                                 <th>Order ID</th>
-                                <th>Date</th>
                                 <th>Status</th>
                                 <th>Shipping Address</th>
                                 <th>Items</th>
@@ -149,18 +153,15 @@ export const Orders: React.FC = () => {
                             {orders.map((order) => (
                                 <tr key={order.id}>
                                     <td>#{order.id}</td>
-                                    <td>{new Date(order.createdDate).toLocaleDateString()}</td>
                                     <td>
                                         <span
                                             className="status-badge"
                                             style={{
-                                                backgroundColor: `${getStatusColor(
-                                                    order.status?.name || ''
-                                                )}20`,
-                                                color: getStatusColor(order.status?.name || ''),
+                                                backgroundColor: `${getStatusColor(order.status || '')}20`,
+                                                color: getStatusColor(order.status || ''),
                                             }}
                                         >
-                                            {order.status?.name || 'N/A'}
+                                            {order.status || 'N/A'}
                                         </span>
                                     </td>
                                     <td>{order.shippingAddress}</td>
@@ -207,25 +208,15 @@ export const Orders: React.FC = () => {
                                         <span>{selectedOrder.id}</span>
                                     </div>
                                     <div className={styles.row}>
-                                        <strong>Date:</strong>
-                                        <span>
-                                            {new Date(selectedOrder.createdDate).toLocaleString()}
-                                        </span>
-                                    </div>
-                                    <div className={styles.row}>
                                         <strong>Status:</strong>
                                         <span
                                             className="status-badge"
                                             style={{
-                                                backgroundColor: `${getStatusColor(
-                                                    selectedOrder.status?.name || ''
-                                                )}20`,
-                                                color: getStatusColor(
-                                                    selectedOrder.status?.name || ''
-                                                ),
+                                                backgroundColor: `${getStatusColor(selectedOrder.status || '')}20`,
+                                                color: getStatusColor(selectedOrder.status || ''),
                                             }}
                                         >
-                                            {selectedOrder.status?.name || 'N/A'}
+                                            {selectedOrder.status || 'N/A'}
                                         </span>
                                     </div>
                                     <div className={styles.section}>
@@ -237,23 +228,28 @@ export const Orders: React.FC = () => {
                                         <div className={styles.section}>
                                             <strong>Games:</strong>
                                             <div className={styles.gamesList}>
-                                                {selectedOrder.games.map((orderGame) => (
-                                                    <div key={orderGame.id} className={styles.gameItem}>
-                                                        <span className={styles.gameName}>
-                                                            {orderGame.game?.name || 'N/A'}
-                                                        </span>
-                                                        <span className={styles.gameQuantity}>
-                                                            x{orderGame.quantity}
-                                                        </span>
-                                                        {orderGame.game && (
-                                                            <span className={styles.gamePrice}>
-                                                                ${(
-                                                                    orderGame.game.price * orderGame.quantity
-                                                                ).toFixed(2)}
+                                                {selectedOrder.games.map((game, index) => {
+                                                    const gameObj = typeof game === 'string' ? null : game;
+                                                    const gameName = typeof game === 'string' ? game : gameObj?.game?.title || 'N/A';
+                                                    const quantity = gameObj?.quantity || 1;
+                                                    const price = gameObj?.game?.price || 0;
+
+                                                    return (
+                                                        <div key={`game-${index}`} className={styles.gameItem}>
+                                                            <span className={styles.gameName}>
+                                                                {gameName}
                                                             </span>
-                                                        )}
-                                                    </div>
-                                                ))}
+                                                            <span className={styles.gameQuantity}>
+                                                                x{quantity}
+                                                            </span>
+                                                            {price > 0 && (
+                                                                <span className={styles.gamePrice}>
+                                                                    ${(price * quantity).toFixed(2)}
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                    );
+                                                })}
                                             </div>
                                         </div>
                                     )}

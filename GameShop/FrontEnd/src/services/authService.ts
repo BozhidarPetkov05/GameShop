@@ -7,7 +7,7 @@ export const authService = {
         formData.append('username', credentials.username);
         formData.append('password', credentials.password);
 
-        const response = await fetch('https://localhost:5000/api/Auth', {
+        const response = await fetch('http://localhost:5001/api/Auth', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',

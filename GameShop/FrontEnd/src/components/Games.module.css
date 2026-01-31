@@ -56,7 +56,13 @@
 
 .gameCardHeader h3 {
     margin: 0 0 8px 0;
-    color: var(--accent-color);
+    color: #ffffff;
+    font-size: clamp(20px, 2.2vw, 24px);
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: 0.4px;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
 }
 
 .price {
@@ -69,8 +75,9 @@
 .description {
     flex: 1;
     margin: 10px 0;
-    font-size: 13px;
-    color: var(--text-light);
+    font-size: 15px;
+    color: #f4f7fb;
+    font-weight: 500;
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
@@ -80,9 +87,18 @@
 }
 
 .meta {
-    font-size: 12px;
-    color: #999;
+    font-size: 13px;
+    color: var(--accent-color);
+    font-weight: 600;
     margin: 10px 0;
+}
+
+.meta span {
+    background: rgba(0, 0, 0, 0.08);
+    padding: 4px 8px;
+    border-radius: 6px;
+    color: var(--text-light);
+    display: inline-block;
 }
 
 .gameCard button {
@@ -91,6 +107,7 @@
 
 .gameDetailContent {
     padding: 20px 0;
+    color: #ffffff;
 }
 
 .detailRow {
@@ -101,7 +118,13 @@
 }
 
 .detailRow strong {
-    color: var(--accent-color);
+    color: var(--text-light);
+    font-weight: 700;
+}
+
+.detailRow span {
+    color: #ffffff;
+    font-weight: 700;
 }
 
 .detailSection {
@@ -109,15 +132,18 @@
 }
 
 .detailSection strong {
-    color: var(--accent-color);
+    color: var(--text-light);
     display: block;
     margin-bottom: 10px;
+    font-weight: 700;
 }
 
 .detailSection p {
     margin: 0;
-    color: var(--text-light);
-    line-height: 1.5;
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.6;
 }
 
 .tagList,
@@ -131,10 +157,17 @@
 .platform {
     display: inline-block;
     background-color: var(--primary-lighter);
-    color: var(--text-light);
+    color: #ffffff;
     padding: 4px 12px;
     border-radius: 16px;
     font-size: 12px;
+}
+
+.modal-header h2 {
+    margin: 0;
+    color: #ffffff;
+    font-size: 22px;
+    font-weight: 700;
 }
 
 .cartItems {
@@ -156,18 +189,19 @@
 
 .cartItemInfo h4 {
     margin: 0 0 5px 0;
-    color: var(--accent-color);
+    color: var(--text-light);
+    font-weight: 700;
 }
 
 .cartItemInfo p {
     margin: 0;
     font-size: 12px;
-    color: var(--success);
+    color: #e6f7ee;
 }
 
 .cartItemTotal {
     font-weight: bold;
-    color: var(--success);
+    color: var(--text-light);
     font-size: 14px;
 }
 
@@ -182,7 +216,7 @@
 
 .cartSummary h3 {
     margin: 0;
-    color: var(--success);
+    color: #ffffff;
 }
 
 @media (max-width: 768px) {

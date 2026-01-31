@@ -3,6 +3,7 @@ import { gameService } from '../services/gameService';
 import { orderService } from '../services/orderService';
 import { GameResponse, OrderRequest } from '../entities';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 import styles from './Games.module.css';
 
 export const Games: React.FC = () => {
@@ -15,6 +16,8 @@ export const Games: React.FC = () => {
     const [orderLoading, setOrderLoading] = useState(false);
     const [shippingAddress, setShippingAddress] = useState('');
     const { cart, clearCart, addToCart } = useCart();
+    const { isAdmin } = useAuth();
+    const totalCartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
     useEffect(() => {
         loadGames();
@@ -40,7 +43,21 @@ export const Games: React.FC = () => {
 
     const handleAddToCart = (game: GameResponse) => {
         addToCart(game);
-        alert('Game added to cart!');
+    };
+
+    const handleDeleteGame = async () => {
+        if (!selectedGame) return;
+        if (!window.confirm(`Are you sure you want to delete "${selectedGame.title}"?`)) {
+            return;
+        }
+        try {
+            await gameService.deleteGame(selectedGame.id);
+            setShowGameDetail(false);
+            setSelectedGame(null);
+            loadGames();
+        } catch (err) {
+            alert(err instanceof Error ? err.message : 'Failed to delete game');
+        }
     };
 
     const handleMakeOrder = async () => {
@@ -48,8 +65,7 @@ export const Games: React.FC = () => {
             alert('Please enter a shipping address');
             return;
         }
-
-        if (cart.length === 0) {
+        if (totalCartCount === 0) {
             alert('Cart is empty');
             return;
         }
@@ -58,14 +74,13 @@ export const Games: React.FC = () => {
             setOrderLoading(true);
             const orderData: OrderRequest = {
                 shippingAddress,
-                gameIds: cart.map((item) => item.gameId),
+                games: cart.map((item) => item.game.title),
             };
 
             await orderService.createOrder(orderData);
             clearCart();
             setShippingAddress('');
             setShowCart(false);
-            alert('Order created successfully!');
         } catch (err) {
             alert(err instanceof Error ? err.message : 'Failed to create order');
         } finally {
@@ -93,8 +108,8 @@ export const Games: React.FC = () => {
                         style={{ position: 'relative' }}
                     >
                         🛒 Cart
-                        {cart.length > 0 && (
-                            <span className={styles.cartBadge}>{cart.length}</span>
+                        {totalCartCount > 0 && (
+                            <span className={styles.cartBadge}>{totalCartCount}</span>
                         )}
                     </button>
                 </div>
@@ -110,12 +125,12 @@ export const Games: React.FC = () => {
                         onClick={() => handleGameClick(game)}
                     >
                         <div className={styles.gameCardHeader}>
-                            <h3>{game.name}</h3>
+                            <h3>{game.title}</h3>
                             <p className={styles.price}>${game.price.toFixed(2)}</p>
                         </div>
                         <p className={styles.description}>{game.description}</p>
                         <p className={styles.meta}>
-                            {game.genre?.name && <span>{game.genre.name}</span>}
+                            {game.genre && <span>{game.genre}</span>}
                         </p>
                         <button
                             className="btn-primary"
@@ -138,7 +153,7 @@ export const Games: React.FC = () => {
                         onClick={(e) => e.stopPropagation()}
                     >
                         <div className="modal-header">
-                            <h2>{selectedGame.name}</h2>
+                            <h2>{selectedGame.title}</h2>
                             <button
                                 className="close-btn"
                                 onClick={() => setShowGameDetail(false)}
@@ -155,21 +170,13 @@ export const Games: React.FC = () => {
 
                             <div className={styles.detailRow}>
                                 <strong>Company:</strong>
-                                <span>{selectedGame.company?.name || 'N/A'}</span>
+                                <span>{selectedGame.company || 'N/A'}</span>
                             </div>
 
                             <div className={styles.detailRow}>
                                 <strong>Genre:</strong>
-                                <span>{selectedGame.genre?.name || 'N/A'}</span>
+                                <span>{selectedGame.genre || 'N/A'}</span>
                             </div>
-
-                            <div className={styles.detailRow}>
-                                <strong>Release Date:</strong>
-                                <span>
-                                    {new Date(selectedGame.releaseDate).toLocaleDateString()}
-                                </span>
-                            </div>
-
                             <div className={styles.detailSection}>
                                 <strong>Description:</strong>
                                 <p>{selectedGame.description}</p>
@@ -179,9 +186,9 @@ export const Games: React.FC = () => {
                                 <div className={styles.detailSection}>
                                     <strong>Tags:</strong>
                                     <div className={styles.tagList}>
-                                        {selectedGame.tags.map((tag) => (
-                                            <span key={tag.id} className={styles.tag}>
-                                                {tag.name}
+                                        {selectedGame.tags.map((tag, index) => (
+                                            <span key={index} className={styles.tag}>
+                                                {tag}
                                             </span>
                                         ))}
                                     </div>
@@ -192,9 +199,9 @@ export const Games: React.FC = () => {
                                 <div className={styles.detailSection}>
                                     <strong>Platforms:</strong>
                                     <div className={styles.platformList}>
-                                        {selectedGame.platforms.map((platform) => (
-                                            <span key={platform.id} className={styles.platform}>
-                                                {platform.name}
+                                        {selectedGame.platforms.map((platform, index) => (
+                                            <span key={index} className={styles.platform}>
+                                                {platform}
                                             </span>
                                         ))}
                                     </div>
@@ -211,6 +218,24 @@ export const Games: React.FC = () => {
                                 >
                                     Add to Cart
                                 </button>
+                                {isAdmin && (
+                                    <>
+                                        <button
+                                            className="btn-warning"
+                                            onClick={() => {
+                                                alert('Edit feature coming soon!');
+                                            }}
+                                        >
+                                            Edit
+                                        </button>
+                                        <button
+                                            className="btn-danger"
+                                            onClick={handleDeleteGame}
+                                        >
+                                            Delete
+                                        </button>
+                                    </>
+                                )}
                                 <button
                                     className="btn-secondary"
                                     onClick={() => setShowGameDetail(false)}
@@ -241,7 +266,7 @@ export const Games: React.FC = () => {
                             </button>
                         </div>
 
-                        {cart.length === 0 ? (
+                        {totalCartCount === 0 ? (
                             <p className="text-center">Your cart is empty</p>
                         ) : (
                             <>
@@ -249,7 +274,7 @@ export const Games: React.FC = () => {
                                     {cart.map((item) => (
                                         <div key={item.gameId} className={styles.cartItem}>
                                             <div className={styles.cartItemInfo}>
-                                                <h4>{item.game.name}</h4>
+                                                <h4>{item.game.title}</h4>
                                                 <p>
                                                     ${item.game.price.toFixed(2)} x {item.quantity}
                                                 </p>
