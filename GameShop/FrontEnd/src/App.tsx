@@ -1,62 +1,53 @@
-import React, { useState, useEffect } from 'react';
+import React, { Suspense, lazy } from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 import { Login } from './components/Login';
 import { Layout } from './components/Layout';
-import { Games } from './components/Games';
-import { Orders } from './components/Orders';
-import { Platforms } from './components/Platforms';
-import { Genres } from './components/Genres';
-import { Companies } from './components/Companies';
-import { Tags } from './components/Tags';
-import { Statuses } from './components/Statuses';
-import { Users } from './components/Users';
-import { Profile } from './components/Profile';
+
+// Lazy load all page components
+const Games = lazy(() => import('./components/Games').then(m => ({ default: m.Games })));
+const Orders = lazy(() => import('./components/Orders').then(m => ({ default: m.Orders })));
+const Platforms = lazy(() => import('./components/Platforms').then(m => ({ default: m.Platforms })));
+const Genres = lazy(() => import('./components/Genres').then(m => ({ default: m.Genres })));
+const Companies = lazy(() => import('./components/Companies').then(m => ({ default: m.Companies })));
+const Tags = lazy(() => import('./components/Tags').then(m => ({ default: m.Tags })));
+const Statuses = lazy(() => import('./components/Statuses').then(m => ({ default: m.Statuses })));
+const Users = lazy(() => import('./components/Users').then(m => ({ default: m.Users })));
+const Profile = lazy(() => import('./components/Profile').then(m => ({ default: m.Profile })));
 
 type Page = 'games' | 'orders' | 'platforms' | 'genres' | 'companies' | 'tags' | 'statuses' | 'users' | 'profile';
 
 function App() {
-    const { isAuthenticated } = useAuth();
-    const [currentPage, setCurrentPage] = useState<Page>('games');
+    const { isAuthenticated, isAdmin } = useAuth();
 
-    useEffect(() => {
-        // Reset to games when user logs out
-        if (!isAuthenticated) {
-            setCurrentPage('games');
-        }
-    }, [isAuthenticated]);
+    const LoadingFallback = () => (
+        <div className="loading">
+            <div className="spinner"></div>
+            <p>Loading...</p>
+        </div>
+    );
 
     if (!isAuthenticated) {
         return <Login />;
     }
 
-    const renderPage = () => {
-        switch (currentPage) {
-            case 'games':
-                return <Games />;
-            case 'orders':
-                return <Orders />;
-            case 'platforms':
-                return <Platforms />;
-            case 'genres':
-                return <Genres />;
-            case 'companies':
-                return <Companies />;
-            case 'tags':
-                return <Tags />;
-            case 'statuses':
-                return <Statuses />;
-            case 'users':
-                return <Users />;
-            case 'profile':
-                return <Profile />;
-            default:
-                return <Games />;
-        }
-    };
-
     return (
-        <Layout currentPage={currentPage} onNavigate={(page) => setCurrentPage(page as Page)}>
-            {renderPage()}
+        <Layout>
+            <Suspense fallback={<LoadingFallback />}>
+                <Routes>
+                    <Route path="/" element={<Navigate to="/games" replace />} />
+                    <Route path="/games" element={<Games />} />
+                    <Route path="/orders" element={<Orders />} />
+                    <Route path="/platforms" element={<Platforms />} />
+                    <Route path="/genres" element={<Genres />} />
+                    <Route path="/companies" element={<Companies />} />
+                    <Route path="/tags" element={<Tags />} />
+                    <Route path="/profile" element={<Profile />} />
+                    {isAdmin && <Route path="/users" element={<Users />} />}
+                    {isAdmin && <Route path="/statuses" element={<Statuses />} />}
+                    <Route path="*" element={<Navigate to="/games" replace />} />
+                </Routes>
+            </Suspense>
         </Layout>
     );
 }

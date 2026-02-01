@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import styles from './Layout.module.css';
 
 interface LayoutProps {
     children: React.ReactNode;
-    currentPage: string;
-    onNavigate: (page: string) => void;
 }
 
-export const Layout: React.FC<LayoutProps> = ({ children, currentPage, onNavigate }) => {
+export const Layout: React.FC<LayoutProps> = ({ children }) => {
     const { userClaims, logout, isAdmin } = useAuth();
+    const navigate = useNavigate();
+    const location = useLocation();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     const handleLogout = () => {
@@ -17,18 +18,23 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPage, onNavigat
     };
 
     const menuItems = [
-        { id: 'games', label: 'Games', admin: false },
-        { id: 'orders', label: 'Orders', admin: false },
-        { id: 'platforms', label: 'Platforms', admin: false },
-        { id: 'genres', label: 'Genres', admin: false },
-        { id: 'companies', label: 'Companies', admin: false },
-        { id: 'tags', label: 'Tags', admin: false },
-        { id: 'users', label: 'Users', admin: true },
-        { id: 'statuses', label: 'Statuses', admin: true },
-        { id: 'profile', label: 'Profile', admin: false },
+        { id: 'games', path: '/games', label: 'Games', admin: false },
+        { id: 'orders', path: '/orders', label: 'Orders', admin: false },
+        { id: 'platforms', path: '/platforms', label: 'Platforms', admin: false },
+        { id: 'genres', path: '/genres', label: 'Genres', admin: false },
+        { id: 'companies', path: '/companies', label: 'Companies', admin: false },
+        { id: 'tags', path: '/tags', label: 'Tags', admin: false },
+        { id: 'users', path: '/users', label: 'Users', admin: true },
+        { id: 'statuses', path: '/statuses', label: 'Statuses', admin: true },
+        { id: 'profile', path: '/profile', label: 'Profile', admin: false },
     ];
 
     const visibleItems = menuItems.filter((item) => !item.admin || isAdmin);
+
+    const handleNavigate = (path: string) => {
+        navigate(path);
+        setMobileMenuOpen(false);
+    };
 
     return (
         <div className={styles.layoutContainer}>
@@ -49,11 +55,8 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPage, onNavigat
                         {visibleItems.map((item) => (
                             <li key={item.id}>
                                 <button
-                                    className={`${styles.navLink} ${currentPage === item.id ? styles.active : ''}`}
-                                    onClick={() => {
-                                        onNavigate(item.id);
-                                        setMobileMenuOpen(false);
-                                    }}
+                                    className={`${styles.navLink} ${location.pathname === item.path ? styles.active : ''}`}
+                                    onClick={() => handleNavigate(item.path)}
                                 >
                                     {item.label}
                                 </button>

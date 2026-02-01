@@ -5,6 +5,10 @@ import { OrderResponse, StatusResponse, OrderRequest } from '../entities';
 import { useAuth } from '../context/AuthContext';
 import styles from './Orders.module.css';
 
+// Module-level cache for statuses
+let statusesCache: StatusResponse[] = [];
+let statusesCacheLoading = false;
+
 export const Orders: React.FC = () => {
     const [orders, setOrders] = useState<OrderResponse[]>([]);
     const [selectedOrder, setSelectedOrder] = useState<OrderResponse | null>(null);
@@ -21,10 +25,16 @@ export const Orders: React.FC = () => {
 
     useEffect(() => {
         loadOrders();
-        if (isAdmin) {
+    }, []);
+
+    useEffect(() => {
+        // Only load statuses when editing and user is admin
+        if (isEditing && isAdmin && statusesCache.length === 0 && !statusesCacheLoading) {
             loadStatuses();
+        } else if (isEditing && isAdmin && statusesCache.length > 0) {
+            setStatuses(statusesCache);
         }
-    }, [isAdmin]);
+    }, [isEditing, isAdmin]);
 
     const loadOrders = async () => {
         try {
@@ -41,11 +51,17 @@ export const Orders: React.FC = () => {
     };
 
     const loadStatuses = async () => {
+        if (statusesCacheLoading) return;
+
         try {
+            statusesCacheLoading = true;
             const data = await statusService.getAllStatuses();
+            statusesCache = data;
             setStatuses(data);
         } catch (err) {
             console.error('Failed to load statuses:', err);
+        } finally {
+            statusesCacheLoading = false;
         }
     };
 

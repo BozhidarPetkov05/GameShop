@@ -27,13 +27,13 @@ th {
     padding: 15px;
     text-align: left;
     font-weight: 600;
-    color: var(--accent-color);
+    color: white;
 }
 
 td {
     padding: 12px 15px;
     border-bottom: 1px solid var(--border-color);
-    color: var(--text-light);
+    color: white;
 }
 
 tbody tr:hover {

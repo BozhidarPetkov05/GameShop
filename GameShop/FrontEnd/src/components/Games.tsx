@@ -10,6 +10,15 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import styles from './Games.module.css';
 
+// Cache for metadata
+let metadataCache = {
+    companies: [] as CompanyResponse[],
+    genres: [] as GenreResponse[],
+    tags: [] as TagResponse[],
+    platforms: [] as PlatformResponse[],
+    isLoading: false,
+};
+
 export const Games: React.FC = () => {
     const [games, setGames] = useState<GameResponse[]>([]);
     const [selectedGame, setSelectedGame] = useState<GameResponse | null>(null);
@@ -45,24 +54,48 @@ export const Games: React.FC = () => {
 
     useEffect(() => {
         loadGames();
-        loadMetadata();
     }, []);
 
+    useEffect(() => {
+        // Only load metadata when showing edit or add modal (and only once)
+        if ((showEditModal || showAddModal) && isAdmin && metadataCache.companies.length === 0) {
+            loadMetadata();
+        } else if ((showEditModal || showAddModal) && metadataCache.companies.length > 0) {
+            // Use cached metadata
+            setCompanies(metadataCache.companies);
+            setGenres(metadataCache.genres);
+            setTags(metadataCache.tags);
+            setPlatforms(metadataCache.platforms);
+        }
+    }, [showEditModal, showAddModal, isAdmin]);
+
     const loadMetadata = async () => {
+        if (metadataCache.isLoading) return;
+
         try {
+            metadataCache.isLoading = true;
             const [companiesData, genresData, tagsData, platformsData] = await Promise.all([
                 companyService.getAllCompanies().catch(() => []),
                 genreService.getAllGenres().catch(() => []),
                 tagService.getAllTags().catch(() => []),
                 platformService.getAllPlatforms().catch(() => []),
             ]);
+
+            // Update cache
+            metadataCache.companies = companiesData;
+            metadataCache.genres = genresData;
+            metadataCache.tags = tagsData;
+            metadataCache.platforms = platformsData;
+
+            // Update local state
             setCompanies(companiesData);
             setGenres(genresData);
             setTags(tagsData);
             setPlatforms(platformsData);
         } catch (err) {
             console.error('Failed to load metadata:', err);
-            // Don't break the app, just log the error
+        } finally {
+            metadataCache.isLoading = false;
         }
     };
 
