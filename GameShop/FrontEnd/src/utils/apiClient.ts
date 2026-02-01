@@ -34,9 +34,49 @@ export const apiCall = async <T>(
     });
 
     if (!response.ok) {
-        const error = await response.text().catch(() => 'Unknown error');
-        console.error(`API Error: ${response.status}`, error);
-        throw new Error(`API Error: ${response.status} - ${error}`);
+        // Try to extract a concise message from JSON or plain text bodies
+        let raw = await response.text().catch(() => 'Unknown error');
+        let concise = raw;
+        try {
+            const parsed = JSON.parse(raw);
+            // If backend returned validation errors in the usual ASP.NET shape { errors: { field: [msgs] } }
+            if (parsed && typeof parsed === 'object' && parsed.errors && typeof parsed.errors === 'object') {
+                const details: string[] = [];
+                for (const [field, messages] of Object.entries(parsed.errors)) {
+                    if (Array.isArray(messages)) {
+                        messages.forEach((m) => details.push(`${field}: ${m}`));
+                    } else {
+                        details.push(`${field}: ${String(messages)}`);
+                    }
+                }
+                // Return only the field-specific messages (no generic title)
+                concise = details.join('; ');
+            } else {
+                // Prefer common fields that contain human-readable messages
+                concise = parsed.message || parsed.error || parsed.title || parsed.detail || JSON.stringify(parsed);
+            }
+        } catch {
+            // not JSON, keep raw
+            concise = raw;
+        }
+
+        // Trim and avoid returning large JSON blobs to the UI
+        if (typeof concise === 'string') {
+            concise = concise.trim();
+            // If it's a JSON-looking string, try to simplify it
+            if (concise.startsWith('{') && concise.endsWith('}')) {
+                try {
+                    const p = JSON.parse(concise);
+                    concise = p.message || p.error || p.title || p.detail || JSON.stringify(p);
+                } catch {
+                    // leave as-is
+                }
+            }
+        }
+
+        console.error(`API Error: ${response.status}`, raw);
+        // Throw only the concise message so UI shows a friendly short message
+        throw new Error(concise || `API Error: ${response.status}`);
     }
 
     if (response.status === 204) {

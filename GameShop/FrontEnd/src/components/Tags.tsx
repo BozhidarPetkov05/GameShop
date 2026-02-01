@@ -12,6 +12,8 @@ export const Tags: React.FC = () => {
     const [showDetail, setShowDetail] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [showAddModal, setShowAddModal] = useState(false);
+    const [editError, setEditError] = useState('');
+    const [addError, setAddError] = useState('');
     const [formData, setFormData] = useState<TagRequest>({
         name: '',
         description: '',
@@ -43,7 +45,7 @@ export const Tags: React.FC = () => {
             setIsEditing(false);
             setShowDetail(true);
         } catch (err) {
-            alert(err instanceof Error ? err.message : 'Failed to load details');
+            setError(err instanceof Error ? err.message : 'Failed to load details');
         }
     };
 
@@ -51,11 +53,12 @@ export const Tags: React.FC = () => {
         if (!selectedItem) return;
 
         try {
+            setEditError('');
             await tagService.updateTag(selectedItem.id, formData);
             setShowDetail(false);
             loadItems();
         } catch (err) {
-            alert(err instanceof Error ? err.message : 'Failed to update');
+            setEditError(err instanceof Error ? err.message : 'Failed to update');
         }
     };
 
@@ -63,11 +66,12 @@ export const Tags: React.FC = () => {
         if (!selectedItem) return;
 
         try {
+            setEditError('');
             await tagService.deleteTag(selectedItem.id);
             setShowDetail(false);
             loadItems();
         } catch (err) {
-            alert(err instanceof Error ? err.message : 'Failed to delete');
+            setEditError(err instanceof Error ? err.message : 'Failed to delete');
         }
     };
 
@@ -75,10 +79,11 @@ export const Tags: React.FC = () => {
         e.stopPropagation();
 
         try {
+            setError('');
             await tagService.deleteTag(tagId);
             loadItems();
         } catch (err) {
-            alert(err instanceof Error ? err.message : 'Failed to delete');
+            setError(err instanceof Error ? err.message : 'Failed to delete');
         }
     };
 
@@ -89,16 +94,17 @@ export const Tags: React.FC = () => {
 
     const handleSaveAdd = async () => {
         if (!formData.name.trim()) {
-            alert('Tag name is required');
+            setAddError('Tag name is required');
             return;
         }
 
         try {
+            setAddError('');
             await tagService.createTag(formData);
             setShowAddModal(false);
             loadItems();
         } catch (err) {
-            alert(err instanceof Error ? err.message : 'Failed to create tag');
+            setAddError(err instanceof Error ? err.message : 'Failed to create tag');
         }
     };
 
@@ -206,6 +212,7 @@ export const Tags: React.FC = () => {
                                             Edit
                                         </button>
                                     )}
+                                    {editError && <div className="error" style={{ marginTop: '10px' }}>{editError}</div>}
                                     <button
                                         className="btn-secondary"
                                         onClick={() => setShowDetail(false)}
@@ -276,6 +283,7 @@ export const Tags: React.FC = () => {
                             </button>
                         </div>
 
+                        {addError && <div className="error" style={{ margin: '20px' }}>{addError}</div>}
                         <div className={styles.form}>
                             <div className="form-group">
                                 <label htmlFor="addName">Name</label>

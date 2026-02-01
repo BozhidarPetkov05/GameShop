@@ -46,3 +46,16 @@
     margin: 5px 0;
     text-align: left;
 }
+
+/* High-contrast error for login form */
+.error {
+    background-color: #7f1d1d;
+    /* dark red */
+    color: #ffffff;
+    /* white text for contrast */
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 16px;
+    border: 1px solid #b91c1c;
+    font-weight: 600;
+}

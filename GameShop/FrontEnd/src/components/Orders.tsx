@@ -89,7 +89,7 @@ export const Orders: React.FC = () => {
             setIsEditing(false);
             setShowDetail(true);
         } catch (err) {
-            alert(err instanceof Error ? err.message : 'Failed to load order details');
+            setError(err instanceof Error ? err.message : 'Failed to load order details');
         }
     };
 
@@ -116,7 +116,7 @@ export const Orders: React.FC = () => {
             loadOrders();
         } catch (err) {
             console.error('Update error:', err);
-            alert(err instanceof Error ? err.message : 'Failed to update order');
+            setError(err instanceof Error ? err.message : 'Failed to update order');
         }
     };
 
@@ -128,7 +128,7 @@ export const Orders: React.FC = () => {
             setShowDetail(false);
             loadOrders();
         } catch (err) {
-            alert(err instanceof Error ? err.message : 'Failed to delete order');
+            setError(err instanceof Error ? err.message : 'Failed to delete order');
         }
     };
 

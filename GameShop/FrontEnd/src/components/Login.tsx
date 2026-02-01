@@ -28,7 +28,13 @@ export const Login: React.FC = () => {
             }
         } catch (err) {
             console.error('Login error:', err);
-            setError(err instanceof Error ? err.message : 'Login failed');
+            // Map authentication failures to a user-friendly message
+            const msg = err instanceof Error ? err.message : 'Login failed';
+            if (msg.toLowerCase().includes('authentication failed') || msg.toLowerCase().includes('no access token')) {
+                setError('Invalid username or password');
+            } else {
+                setError(msg);
+            }
         } finally {
             setLoading(false);
         }
@@ -40,7 +46,7 @@ export const Login: React.FC = () => {
                 <h1>GameShop</h1>
                 <p>Sign in to your account</p>
 
-                {error && <div className="error">{error}</div>}
+                {error && <div className={styles.error}>{error}</div>}
 
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">

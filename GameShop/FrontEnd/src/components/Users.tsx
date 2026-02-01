@@ -13,6 +13,8 @@ export const Users: React.FC = () => {
     const [showDetail, setShowDetail] = useState(false);
     const [showEdit, setShowEdit] = useState(false);
     const [showCreate, setShowCreate] = useState(false);
+    const [editError, setEditError] = useState('');
+    const [createError, setCreateError] = useState('');
     const [editForm, setEditForm] = useState<any>({});
     const [createForm, setCreateForm] = useState<UserRequest>({
         username: '',
@@ -46,7 +48,7 @@ export const Users: React.FC = () => {
             setSelectedUser(userData);
             setShowDetail(true);
         } catch (err) {
-            alert(err instanceof Error ? err.message : 'Failed to load user details');
+            setError(err instanceof Error ? err.message : 'Failed to load user details');
         }
     };
 
@@ -69,7 +71,7 @@ export const Users: React.FC = () => {
             setUsers(users.filter(u => u.id !== userId));
             setShowDetail(false);
         } catch (err) {
-            alert(err instanceof Error ? err.message : 'Failed to delete user');
+            setError(err instanceof Error ? err.message : 'Failed to delete user');
         }
     };
 
@@ -82,13 +84,13 @@ export const Users: React.FC = () => {
             setShowEdit(false);
             setShowDetail(false);
         } catch (err) {
-            alert(err instanceof Error ? err.message : 'Failed to update user');
+            setEditError(err instanceof Error ? err.message : 'Failed to update user');
         }
     };
 
     const handleCreateUser = async () => {
         if (!createForm.username || !createForm.email || !createForm.password) {
-            alert('Username, email, and password are required');
+            setCreateError('Username, email, and password are required');
             return;
         }
 
@@ -109,7 +111,7 @@ export const Users: React.FC = () => {
             setCreateFormIsAdmin(false);
             await loadUsers();
         } catch (err) {
-            alert(err instanceof Error ? err.message : 'Failed to create user');
+            setCreateError(err instanceof Error ? err.message : 'Failed to create user');
         }
     };
 
@@ -197,6 +199,7 @@ export const Users: React.FC = () => {
                         className="modal-content"
                         onClick={(e) => e.stopPropagation()}
                     >
+                        {error && <div className="error">{error}</div>}
                         <div className="modal-header">
                             <h2>User Details</h2>
                             <button
@@ -259,6 +262,7 @@ export const Users: React.FC = () => {
                         className="modal-content"
                         onClick={(e) => e.stopPropagation()}
                     >
+                        {editError && <div className="error">{editError}</div>}
                         <div className="modal-header">
                             <h2>Edit User</h2>
                             <button
@@ -347,6 +351,7 @@ export const Users: React.FC = () => {
                         className="modal-content"
                         onClick={(e) => e.stopPropagation()}
                     >
+                        {createError && <div className="error">{createError}</div>}
                         <div className="modal-header">
                             <h2>Add New User</h2>
                             <button

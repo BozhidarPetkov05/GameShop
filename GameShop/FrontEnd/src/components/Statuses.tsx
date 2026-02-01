@@ -12,6 +12,7 @@ export const Statuses: React.FC = () => {
     const [showDetail, setShowDetail] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [isCreating, setIsCreating] = useState(false);
+    const [formError, setFormError] = useState('');
     const { isAdmin } = useAuth();
     const [formData, setFormData] = useState<StatusRequest>({
         name: '',
@@ -29,7 +30,8 @@ export const Statuses: React.FC = () => {
             const data = await statusService.getAllStatuses();
             setItems(data);
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'Failed to load statuses');
+            const msg = err instanceof Error ? err.message : 'Failed to load statuses';
+            setError(`Unable to load statuses: ${msg}`);
         } finally {
             setLoading(false);
         }
@@ -57,7 +59,8 @@ export const Statuses: React.FC = () => {
             setIsCreating(false);
             setShowDetail(true);
         } catch (err) {
-            alert(err instanceof Error ? err.message : 'Failed to load details');
+            const msg = err instanceof Error ? err.message : 'Failed to load status details';
+            setError(`Unable to load status details: ${msg}`);
         }
     };
 
@@ -73,21 +76,25 @@ export const Statuses: React.FC = () => {
         if (!selectedItem) return;
 
         try {
+            setFormError('');
             await statusService.updateStatus(selectedItem.id, formData);
             setShowDetail(false);
             loadItems();
         } catch (err) {
-            alert(err instanceof Error ? err.message : 'Failed to update');
+            const msg = err instanceof Error ? err.message : 'Failed to update status';
+            setFormError(`Unable to update status: ${msg}`);
         }
     };
 
     const handleCreate = async () => {
         try {
+            setFormError('');
             await statusService.createStatus(formData);
             closeModal();
             loadItems();
         } catch (err) {
-            alert(err instanceof Error ? err.message : 'Failed to create');
+            const msg = err instanceof Error ? err.message : 'Failed to create status';
+            setFormError(`Unable to create status: ${msg}`);
         }
     };
 
@@ -95,11 +102,13 @@ export const Statuses: React.FC = () => {
         if (!selectedItem) return;
 
         try {
+            setFormError('');
             await statusService.deleteStatus(selectedItem.id);
             closeModal();
             loadItems();
         } catch (err) {
-            alert(err instanceof Error ? err.message : 'Failed to delete');
+            const msg = err instanceof Error ? err.message : 'Failed to delete status';
+            setFormError(`Unable to delete status: ${msg}`);
         }
     };
 
@@ -158,6 +167,8 @@ export const Statuses: React.FC = () => {
                                 ×
                             </button>
                         </div>
+
+                        {formError && <div className="error" style={{ margin: '10px 20px' }}>{formError}</div>}
 
                         {!isEditing ? (
                             <>

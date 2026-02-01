@@ -160,11 +160,15 @@ a:hover {
 }
 
 .error {
-    color: var(--danger);
-    background-color: rgba(239, 68, 68, 0.1);
+    /* stronger, high-contrast error styling */
+    color: #ffffff;
+    background-color: rgba(239, 68, 68, 0.18);
     padding: 12px;
     border-radius: 4px;
     margin-bottom: 16px;
+    border: 1px solid rgba(239, 68, 68, 0.95);
+    font-weight: 700;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.15);
 }
 
 .success {

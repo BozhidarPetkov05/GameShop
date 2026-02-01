@@ -79,7 +79,8 @@ export const Profile: React.FC = () => {
             setIsEditing(false);
             loadProfile();
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'Failed to update profile');
+            const msg = err instanceof Error ? err.message : 'Failed to update profile';
+            setError(`Unable to update profile: ${msg}`);
         }
     };
 
@@ -94,7 +95,8 @@ export const Profile: React.FC = () => {
                 logout();
             }, 2000);
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'Failed to delete account');
+            const msg = err instanceof Error ? err.message : 'Failed to delete account';
+            setError(`Unable to delete account: ${msg}`);
             setShowDeleteConfirm(false);
         }
     };

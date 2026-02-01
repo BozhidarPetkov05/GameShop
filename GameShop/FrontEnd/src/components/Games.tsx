@@ -129,7 +129,7 @@ export const Games: React.FC = () => {
             setSelectedGame(null);
             loadGames();
         } catch (err) {
-            alert(err instanceof Error ? err.message : 'Failed to delete game');
+            setError(err instanceof Error ? err.message : 'Failed to delete game');
         }
     };
 
@@ -173,11 +173,11 @@ export const Games: React.FC = () => {
             const companyId = companies.find(c => c.name === addData.company)?.id || 0;
             const genreId = genres.find(g => g.name === addData.genre)?.id || 0;
             const tagIds = tags
-                .filter(t => addData.tags.includes(t.name))
-                .map(t => t.id);
+                .filter((t: any) => addData.tags.includes(t.name))
+                .map((t: any) => t.id);
             const platformIds = platforms
-                .filter(p => addData.platforms.includes(p.name))
-                .map(p => p.id);
+                .filter((p: any) => addData.platforms.includes(p.name))
+                .map((p: any) => p.id);
 
             if (!companyId || !genreId) {
                 setAddError('Invalid company or genre selected');
@@ -215,11 +215,11 @@ export const Games: React.FC = () => {
             const companyId = companies.find(c => c.name === editData.company)?.id || 0;
             const genreId = genres.find(g => g.name === editData.genre)?.id || 0;
             const tagIds = tags
-                .filter(t => editData.tags.includes(t.name))
-                .map(t => t.id);
+                .filter((t: any) => editData.tags.includes(t.name))
+                .map((t: any) => t.id);
             const platformIds = platforms
-                .filter(p => editData.platforms.includes(p.name))
-                .map(p => p.id);
+                .filter((p: any) => editData.platforms.includes(p.name))
+                .map((p: any) => p.id);
 
             const updateData = {
                 name: editData.title,
@@ -246,11 +246,11 @@ export const Games: React.FC = () => {
 
     const handleMakeOrder = async () => {
         if (!shippingAddress.trim()) {
-            alert('Please enter a shipping address');
+            setError('Please enter a shipping address');
             return;
         }
         if (totalCartCount === 0) {
-            alert('Cart is empty');
+            setError('Cart is empty');
             return;
         }
 
@@ -266,7 +266,7 @@ export const Games: React.FC = () => {
             setShippingAddress('');
             setShowCart(false);
         } catch (err) {
-            alert(err instanceof Error ? err.message : 'Failed to create order');
+            setError(err instanceof Error ? err.message : 'Failed to create order');
         } finally {
             setOrderLoading(false);
         }
@@ -858,7 +858,7 @@ export const Games: React.FC = () => {
                                                         } else {
                                                             setAddData({
                                                                 ...addData,
-                                                                tags: addData.tags.filter(t => t !== tag.name),
+                                                                tags: addData.tags.filter((t: string) => t !== tag.name),
                                                             });
                                                         }
                                                     }}
@@ -889,7 +889,7 @@ export const Games: React.FC = () => {
                                                         } else {
                                                             setAddData({
                                                                 ...addData,
-                                                                platforms: addData.platforms.filter(p => p !== platform.name),
+                                                                platforms: addData.platforms.filter((p: string) => p !== platform.name),
                                                             });
                                                         }
                                                     }}

@@ -9,6 +9,9 @@ export const Genres: React.FC = () => {
     const [selectedItem, setSelectedItem] = useState<GenreResponse | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [detailError, setDetailError] = useState('');
+    const [editError, setEditError] = useState('');
+    const [addError, setAddError] = useState('');
     const [showDetail, setShowDetail] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [showAddModal, setShowAddModal] = useState(false);
@@ -41,9 +44,11 @@ export const Genres: React.FC = () => {
             setSelectedItem(data);
             setFormData({ name: data.name, description: data.description });
             setIsEditing(false);
+            setDetailError('');
+            setEditError('');
             setShowDetail(true);
         } catch (err) {
-            alert(err instanceof Error ? err.message : 'Failed to load details');
+            setDetailError(err instanceof Error ? err.message : 'Failed to load details');
         }
     };
 
@@ -51,11 +56,12 @@ export const Genres: React.FC = () => {
         if (!selectedItem) return;
 
         try {
+            setEditError('');
             await genreService.updateGenre(selectedItem.id, formData);
             setShowDetail(false);
             loadItems();
         } catch (err) {
-            alert(err instanceof Error ? err.message : 'Failed to update');
+            setEditError(err instanceof Error ? err.message : 'Failed to update');
         }
     };
 
@@ -63,11 +69,12 @@ export const Genres: React.FC = () => {
         if (!selectedItem) return;
 
         try {
+            setEditError('');
             await genreService.deleteGenre(selectedItem.id);
             setShowDetail(false);
             loadItems();
         } catch (err) {
-            alert(err instanceof Error ? err.message : 'Failed to delete');
+            setEditError(err instanceof Error ? err.message : 'Failed to delete');
         }
     };
 
@@ -78,27 +85,29 @@ export const Genres: React.FC = () => {
             await genreService.deleteGenre(genreId);
             loadItems();
         } catch (err) {
-            alert(err instanceof Error ? err.message : 'Failed to delete');
+            setError(err instanceof Error ? err.message : 'Failed to delete');
         }
     };
 
     const handleOpenAddModal = () => {
         setFormData({ name: '', description: '' });
+        setAddError('');
         setShowAddModal(true);
     };
 
     const handleSaveAdd = async () => {
         if (!formData.name.trim()) {
-            alert('Genre name is required');
+            setAddError('Genre name is required');
             return;
         }
 
         try {
+            setAddError('');
             await genreService.createGenre(formData);
             setShowAddModal(false);
             loadItems();
         } catch (err) {
-            alert(err instanceof Error ? err.message : 'Failed to create genre');
+            setAddError(err instanceof Error ? err.message : 'Failed to create genre');
         }
     };
 
@@ -172,6 +181,8 @@ export const Genres: React.FC = () => {
                             </button>
                         </div>
 
+                        {detailError && <div className="error" style={{ margin: '10px 20px' }}>{detailError}</div>}
+
                         {!isEditing ? (
                             <>
                                 <div className={styles.detail}>
@@ -216,6 +227,9 @@ export const Genres: React.FC = () => {
                             </>
                         ) : (
                             <>
+                                <div>
+                                    {editError && <div className="error" style={{ margin: '10px 20px' }}>{editError}</div>}
+                                </div>
                                 <div className={styles.form}>
                                     <div className="form-group">
                                         <label htmlFor="name">Name</label>
@@ -275,6 +289,8 @@ export const Genres: React.FC = () => {
                                 ×
                             </button>
                         </div>
+
+                        {addError && <div className="error" style={{ margin: '10px 20px' }}>{addError}</div>}
 
                         <div className={styles.form}>
                             <div className="form-group">
