@@ -17,7 +17,7 @@ export const Orders: React.FC = () => {
         shippingAddress: '',
         statusId: 0,
     });
-    const { userClaims, isAdmin } = useAuth();
+    const { isAdmin } = useAuth();
 
     useEffect(() => {
         loadOrders();
@@ -141,9 +141,11 @@ export const Orders: React.FC = () => {
                         <thead>
                             <tr>
                                 <th>Order ID</th>
+                                <th>User ID</th>
                                 <th>Status</th>
                                 <th>Shipping Address</th>
                                 <th>Items</th>
+                                <th>Total Price</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -151,6 +153,7 @@ export const Orders: React.FC = () => {
                             {orders.map((order) => (
                                 <tr key={order.id}>
                                     <td>#{order.id}</td>
+                                    <td>{order.userId}</td>
                                     <td>
                                         <span
                                             className="status-badge"
@@ -164,6 +167,7 @@ export const Orders: React.FC = () => {
                                     </td>
                                     <td>{order.shippingAddress}</td>
                                     <td>{order.games?.length || 0}</td>
+                                    <td>${(order.totalPrice ?? 0).toFixed(2)}</td>
                                     <td>
                                         <button
                                             className="btn-primary"
@@ -204,6 +208,10 @@ export const Orders: React.FC = () => {
                                     <div className={styles.row}>
                                         <strong>Order ID:</strong>
                                         <span>{selectedOrder.id}</span>
+                                    </div>
+                                    <div className={styles.row}>
+                                        <strong>User ID:</strong>
+                                        <span>{selectedOrder.userId}</span>
                                     </div>
                                     <div className={styles.row}>
                                         <strong>Status:</strong>
@@ -251,6 +259,13 @@ export const Orders: React.FC = () => {
                                             </div>
                                         </div>
                                     )}
+
+                                    <div className={styles.row}>
+                                        <strong>Total Price:</strong>
+                                        <span style={{ fontSize: '18px', fontWeight: 'bold', color: '#0066cc' }}>
+                                            ${(selectedOrder.totalPrice ?? 0).toFixed(2)}
+                                        </span>
+                                    </div>
                                 </div>
 
                                 <div className="button-group">

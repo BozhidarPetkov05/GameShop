@@ -37,6 +37,7 @@ export const Profile: React.FC = () => {
                 email: data.email,
                 firstName: data.firstName,
                 lastName: data.lastName,
+                password: '',
             });
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Failed to load profile');
@@ -56,27 +57,26 @@ export const Profile: React.FC = () => {
     };
 
     const handleUpdate = async () => {
-        if (!userClaims?.loggedUserId) return;
+        if (!userClaims?.loggedUserId || !user) return;
 
         try {
             setError('');
             setSuccess('');
-            const updateData: Partial<UserRequest> = {
+            const updateData: any = {
                 username: formData.username,
                 email: formData.email,
                 firstName: formData.firstName,
                 lastName: formData.lastName,
-                isAdmin: user.isAdmin,
+                password: formData.password || (user as any).password || '',
             };
 
-            if (formData.password) {
-                updateData.password = formData.password;
+            if (userClaims.isAdmin) {
+                updateData.isAdmin = user.isAdmin;
             }
 
             await userService.updateUser(userClaims.loggedUserId, updateData);
             setSuccess('Profile updated successfully!');
             setIsEditing(false);
-            setFormData((prev) => ({ ...prev, password: '' }));
             loadProfile();
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Failed to update profile');
@@ -142,6 +142,10 @@ export const Profile: React.FC = () => {
                             <div className={styles.infoRow}>
                                 <label>Admin:</label>
                                 <span>{user.isAdmin ? 'Yes' : 'No'}</span>
+                            </div>
+                            <div className={styles.infoRow}>
+                                <label>Password:</label>
+                                <span>••••••••</span>
                             </div>
 
                         </div>
@@ -209,14 +213,14 @@ export const Profile: React.FC = () => {
                             </div>
 
                             <div className="form-group">
-                                <label htmlFor="password">Password (leave empty to keep current)</label>
+                                <label htmlFor="password">Password</label>
                                 <input
                                     id="password"
                                     type="password"
                                     name="password"
                                     value={formData.password || ''}
                                     onChange={handleInputChange}
-                                    placeholder="New password (optional)"
+                                    placeholder="Leave empty to keep current password"
                                 />
                             </div>
 

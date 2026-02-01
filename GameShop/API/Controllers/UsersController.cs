@@ -144,15 +144,14 @@ namespace API.Controllers
                 forUpdate.LastName = model.LastName;
             }
 
-            if (isAdmin)
-            {
-                forUpdate.IsAdmin = model.IsAdmin;
-            }
-
-
             if (!string.IsNullOrEmpty(model.Password))
             {
                 forUpdate.Password = model.Password;
+            }
+
+            if (isAdmin)
+            {
+                forUpdate.IsAdmin = model.IsAdmin;
             }
 
             if (isAdmin && !string.IsNullOrEmpty(model.Username))

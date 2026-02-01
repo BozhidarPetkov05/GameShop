@@ -1,16 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { userService } from '../services/userService';
 import { UserResponse, UserRequest } from '../entities';
+import { useAuth } from '../context/AuthContext';
 import styles from './Users.module.css';
 
 export const Users: React.FC = () => {
+    const { isAdmin } = useAuth();
     const [users, setUsers] = useState<UserResponse[]>([]);
     const [selectedUser, setSelectedUser] = useState<UserResponse | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [showDetail, setShowDetail] = useState(false);
     const [showEdit, setShowEdit] = useState(false);
+    const [showCreate, setShowCreate] = useState(false);
     const [editForm, setEditForm] = useState<any>({});
+    const [createForm, setCreateForm] = useState<UserRequest>({
+        username: '',
+        email: '',
+        firstName: '',
+        lastName: '',
+        password: '',
+    });
+    const [createFormIsAdmin, setCreateFormIsAdmin] = useState(false);
 
     useEffect(() => {
         loadUsers();
@@ -75,6 +86,33 @@ export const Users: React.FC = () => {
         }
     };
 
+    const handleCreateUser = async () => {
+        if (!createForm.username || !createForm.email || !createForm.password) {
+            alert('Username, email, and password are required');
+            return;
+        }
+
+        try {
+            const userToCreate: UserRequest = {
+                ...createForm,
+                isAdmin: createFormIsAdmin,
+            };
+            await userService.createUser(userToCreate);
+            setShowCreate(false);
+            setCreateForm({
+                username: '',
+                email: '',
+                firstName: '',
+                lastName: '',
+                password: '',
+            });
+            setCreateFormIsAdmin(false);
+            await loadUsers();
+        } catch (err) {
+            alert(err instanceof Error ? err.message : 'Failed to create user');
+        }
+    };
+
     if (loading) {
         return (
             <div className="loading">
@@ -86,7 +124,18 @@ export const Users: React.FC = () => {
 
     return (
         <div className={styles.usersContainer}>
-            <h1>User Management</h1>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <h1>User Management</h1>
+                {isAdmin && (
+                    <button
+                        className="btn-success"
+                        onClick={() => setShowCreate(true)}
+                        style={{ marginBottom: '20px' }}
+                    >
+                        + Add User
+                    </button>
+                )}
+            </div>
 
             {error && <div className="error">{error}</div>}
 
@@ -183,6 +232,12 @@ export const Users: React.FC = () => {
                                 <strong>Admin:</strong>
                                 <span>{selectedUser.isAdmin ? 'Yes' : 'No'}</span>
                             </div>
+                            {isAdmin && (
+                                <div className={styles.detailRow}>
+                                    <strong>Password:</strong>
+                                    <span>{selectedUser.password || '••••••••'}</span>
+                                </div>
+                            )}
                         </div>
 
                         <div className="button-group">
@@ -277,6 +332,94 @@ export const Users: React.FC = () => {
                             <button
                                 className="btn-secondary"
                                 onClick={() => setShowEdit(false)}
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* User Create Modal */}
+            {showCreate && (
+                <div className="modal active" onClick={() => setShowCreate(false)}>
+                    <div
+                        className="modal-content"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="modal-header">
+                            <h2>Add New User</h2>
+                            <button
+                                className="close-btn"
+                                onClick={() => setShowCreate(false)}
+                            >
+                                ×
+                            </button>
+                        </div>
+
+                        <div className={styles.editForm}>
+                            <div className={styles.formGroup}>
+                                <label>Username</label>
+                                <input
+                                    type="text"
+                                    value={createForm.username || ''}
+                                    onChange={(e) => setCreateForm({ ...createForm, username: e.target.value })}
+                                />
+                            </div>
+                            <div className={styles.formGroup}>
+                                <label>Email</label>
+                                <input
+                                    type="email"
+                                    value={createForm.email || ''}
+                                    onChange={(e) => setCreateForm({ ...createForm, email: e.target.value })}
+                                />
+                            </div>
+                            <div className={styles.formGroup}>
+                                <label>First Name</label>
+                                <input
+                                    type="text"
+                                    value={createForm.firstName || ''}
+                                    onChange={(e) => setCreateForm({ ...createForm, firstName: e.target.value })}
+                                />
+                            </div>
+                            <div className={styles.formGroup}>
+                                <label>Last Name</label>
+                                <input
+                                    type="text"
+                                    value={createForm.lastName || ''}
+                                    onChange={(e) => setCreateForm({ ...createForm, lastName: e.target.value })}
+                                />
+                            </div>
+                            <div className={styles.formGroup}>
+                                <label>Password</label>
+                                <input
+                                    type="password"
+                                    value={createForm.password || ''}
+                                    onChange={(e) => setCreateForm({ ...createForm, password: e.target.value })}
+                                />
+                            </div>
+                            <div className={styles.formGroup}>
+                                <label>
+                                    <input
+                                        type="checkbox"
+                                        checked={createFormIsAdmin}
+                                        onChange={(e) => setCreateFormIsAdmin(e.target.checked)}
+                                    />
+                                    Admin
+                                </label>
+                            </div>
+                        </div>
+
+                        <div className="button-group">
+                            <button
+                                className="btn-success"
+                                onClick={handleCreateUser}
+                            >
+                                Create
+                            </button>
+                            <button
+                                className="btn-secondary"
+                                onClick={() => setShowCreate(false)}
                             >
                                 Cancel
                             </button>

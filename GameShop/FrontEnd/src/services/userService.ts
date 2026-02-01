@@ -10,6 +10,13 @@ export const userService = {
         return apiCall<UserResponse>(`/api/Users/${id}`, { method: 'GET' });
     },
 
+    createUser: async (data: UserRequest): Promise<UserResponse> => {
+        return apiCall<UserResponse>('/api/Users', {
+            method: 'POST',
+            body: JSON.stringify(data),
+        });
+    },
+
     updateUser: async (id: number, data: Partial<UserRequest>): Promise<UserResponse> => {
         return apiCall<UserResponse>(`/api/Users/${id}`, {
             method: 'PUT',

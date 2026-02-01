@@ -17,13 +17,13 @@ public class TokenServices
             new Claim("isAdmin", user.IsAdmin.ToString())
         };
 
-        var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes("!Password123!Password123!Password123"));
+        var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes("SuperTurboMegaPUSecretKey!123!PU123!PU123!"));
         var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         //TODO: Change issuer and audience
         JwtSecurityToken token = new JwtSecurityToken(
-            issuer: "fmi",
-            audience: "front-end",
+            issuer: "pu-fmi",
+            audience: "web-api-game-shop",
             claims: claims,
             expires: DateTime.Now.AddMinutes(10),
             signingCredentials: cred

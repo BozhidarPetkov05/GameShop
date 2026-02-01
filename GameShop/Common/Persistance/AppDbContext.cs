@@ -115,7 +115,7 @@ public class AppDbContext : DbContext
             .HasOne(o => o.User)
             .WithMany(o => o.Orders)
             .HasForeignKey(o => o.UserId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<Order>()
             .HasOne(o => o.Status)
@@ -132,7 +132,7 @@ public class AppDbContext : DbContext
             .HasOne(og => og.Order)
             .WithMany(og => og.OrderGames)
             .HasForeignKey(og => og.OrderId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<OrderGame>()
             .HasOne(og => og.Game)

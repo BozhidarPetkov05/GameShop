@@ -27,10 +27,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     {
         options.TokenValidationParameters = new TokenValidationParameters()
         {
-            ValidIssuer = "fmi",
-            ValidAudience = "front-end",
+            ValidIssuer = "pu-fmi",
+            ValidAudience = "web-api-game-shop",
             IssuerSigningKey =
-                        new SymmetricSecurityKey(Encoding.ASCII.GetBytes("!Password123!Password123!Password123"))
+                        new SymmetricSecurityKey(Encoding.ASCII.GetBytes("SuperTurboMegaPUSecretKey!123!PU123!PU123!"))
         };
     });
 
