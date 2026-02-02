@@ -25,7 +25,7 @@ public class TokenServices
             issuer: "pu-fmi",
             audience: "web-api-game-shop",
             claims: claims,
-            expires: DateTime.Now.AddMinutes(10),
+            expires: DateTime.Now.AddMinutes(30),
             signingCredentials: cred
         );
         string tokenData = new JwtSecurityTokenHandler()

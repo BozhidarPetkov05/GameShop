@@ -39,15 +39,12 @@ builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
 var app = builder.Build();
 
-// CORS MUST run first before any middleware that could short-circuit or throw
 app.UseCors();
 
-// Exception handler that ensures CORS headers are present on error responses
 app.UseExceptionHandler(errorApp =>
 {
     errorApp.Run(async context =>
     {
-        // Ensure CORS headers are set on error responses
         if (!context.Response.Headers.ContainsKey("Access-Control-Allow-Origin"))
         {
             context.Response.Headers["Access-Control-Allow-Origin"] = "*";
@@ -60,7 +57,6 @@ app.UseExceptionHandler(errorApp =>
     });
 });
 
-// Handle preflight (OPTIONS) requests with CORS headers
 app.Use(async (context, next) =>
 {
     if (context.Request.Method == "OPTIONS")
