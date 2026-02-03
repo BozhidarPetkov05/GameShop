@@ -45,7 +45,6 @@ namespace API.Controllers
         {
             var loggedUserId = User.FindFirst("loggedUserId")?.Value;
 
-            // Allow admins to view any user, or users to view their own profile
             if (!User.HasClaim("isAdmin", "True") && loggedUserId != id.ToString())
             {
                 return Unauthorized(new { message = "Invalid permissions." });

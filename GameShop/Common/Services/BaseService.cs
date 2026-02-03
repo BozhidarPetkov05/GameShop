@@ -18,7 +18,6 @@ public class BaseService<T> where T : BaseEntity
         Items = Context.Set<T>();
     }
 
-    //TODO: Add Filters
     public List<T> GetAll()
     {
         return Items.ToList();

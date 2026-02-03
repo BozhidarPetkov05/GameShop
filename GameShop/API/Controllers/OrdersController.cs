@@ -190,7 +190,6 @@ namespace API.Controllers
 
                 if (loggedUserId == forUpdate.UserId)
                 {
-                    service.DeleteOrderGame(forUpdate.Id);
 
                     List<int> gameIds = service.GetGameIds(model.Games);
                     if (gameIds == null || gameIds.Count == 0)
@@ -198,6 +197,7 @@ namespace API.Controllers
                         return BadRequest("No games with this name!");
                     }
 
+                    service.DeleteOrderGame(forUpdate.Id);
                     forUpdate.TotalPrice = service.CalculateTotalPrice(gameIds);
                     forUpdate.ShippingAddress = model.ShippingAddress;
 

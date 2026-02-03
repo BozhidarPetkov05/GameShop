@@ -19,7 +19,7 @@ namespace API.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ServiceResultExtentions<List<Error>>.Failure(null, ModelState));
+                return BadRequest("Invalid data");
             }
 
             UserServices service = new UserServices();
@@ -30,9 +30,7 @@ namespace API.Controllers
 
             if (loggedUser == null)
             {
-                ModelState.AddModelError("Global", "Invalid username or password.");
-
-                return Unauthorized(ServiceResultExtentions<List<Error>>.Failure(null, ModelState));
+                return Unauthorized("Invalid username or password");
             }
 
             TokenServices tokenService = new TokenServices();
