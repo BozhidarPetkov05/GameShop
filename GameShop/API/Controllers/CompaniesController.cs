@@ -63,7 +63,6 @@ namespace API.Controllers
                 return BadRequest("Company with this name already exists!");
             }
 
-
             var item = new Company()
             {
                 Name = model.Name

@@ -10,7 +10,7 @@ public class UserValidator : AbstractValidator<UserRequest>
     {
         RuleFor(u => u.Username)
             .NotEmpty().WithMessage("Username is required!")
-            .MinimumLength(3).WithMessage("Username must be at least 3 characters long!")
+            .MinimumLength(4).WithMessage("Username must be at least 4 characters long!")
             .MaximumLength(30).WithMessage("Username cannot exceed 30 characters!");
 
         RuleFor(u => u.Email)

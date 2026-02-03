@@ -41,32 +41,32 @@ var app = builder.Build();
 
 app.UseCors();
 
-app.UseExceptionHandler(errorApp =>
-{
-    errorApp.Run(async context =>
-    {
-        if (!context.Response.Headers.ContainsKey("Access-Control-Allow-Origin"))
-        {
-            context.Response.Headers["Access-Control-Allow-Origin"] = "*";
-            context.Response.Headers["Access-Control-Allow-Methods"] = "GET,POST,PUT,DELETE,OPTIONS";
-            context.Response.Headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization";
-        }
-        context.Response.StatusCode = 500;
-        context.Response.ContentType = "application/json";
-        await context.Response.WriteAsJsonAsync(new { error = "Internal server error" });
-    });
-});
+// app.UseExceptionHandler(errorApp =>
+// {
+//     errorApp.Run(async context =>
+//     {
+//         if (!context.Response.Headers.ContainsKey("Access-Control-Allow-Origin"))
+//         {
+//             context.Response.Headers["Access-Control-Allow-Origin"] = "*";
+//             context.Response.Headers["Access-Control-Allow-Methods"] = "GET,POST,PUT,DELETE,OPTIONS";
+//             context.Response.Headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization";
+//         }
+//         context.Response.StatusCode = 500;
+//         context.Response.ContentType = "application/json";
+//         await context.Response.WriteAsJsonAsync(new { error = "Internal server error" });
+//     });
+// });
 
-app.Use(async (context, next) =>
-{
-    if (context.Request.Method == "OPTIONS")
-    {
-        context.Response.StatusCode = 200;
-        await context.Response.CompleteAsync();
-        return;
-    }
-    await next();
-});
+// app.Use(async (context, next) =>
+// {
+//     if (context.Request.Method == "OPTIONS")
+//     {
+//         context.Response.StatusCode = 200;
+//         await context.Response.CompleteAsync();
+//         return;
+//     }
+//     await next();
+// });
 
 app.UseAuthentication();
 app.UseAuthorization();

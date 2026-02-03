@@ -19,8 +19,7 @@ namespace API.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-            var isAdminClaim = User.FindFirst("isAdmin")?.Value;
-            if (isAdminClaim != "True")
+            if (!User.HasClaim("isAdmin", "True"))
             {
                 return Unauthorized(new { message = "Invalid permissions. Admin access required." });
             }
@@ -44,11 +43,10 @@ namespace API.Controllers
         [Route("{id}")]
         public IActionResult Get([FromRoute] int id)
         {
-            var isAdmin = User.FindFirst("isAdmin")?.Value == "True";
             var loggedUserId = User.FindFirst("loggedUserId")?.Value;
 
             // Allow admins to view any user, or users to view their own profile
-            if (!isAdmin && loggedUserId != id.ToString())
+            if (!User.HasClaim("isAdmin", "True") && loggedUserId != id.ToString())
             {
                 return Unauthorized(new { message = "Invalid permissions." });
             }

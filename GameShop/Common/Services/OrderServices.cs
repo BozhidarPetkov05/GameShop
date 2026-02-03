@@ -20,9 +20,9 @@ public class OrderServices : BaseService<Order>
     {
 
         return Context.Set<Status>()
-          .Where(s => s.Name == name)
-          .Select(s => s.Id)
-          .FirstOrDefault();
+            .Where(s => s.Name == name)
+            .Select(s => s.Id)
+            .FirstOrDefault();
 
     }
 

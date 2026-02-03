@@ -135,35 +135,35 @@ namespace API.Controllers
                     return Unauthorized(new { message = "Invalid permissions. Admin access required." });
                 }
 
-                if (model.Status == "Cancelled")
-                {
-                    forUpdate.StatusId = service.GetStatusId("Cancelled");
-                    var response = MapOrderResponseDTO(forUpdate);
-                    return Ok(response);
-                }
+                // if (model.Status == "Cancelled")
+                // {
+                //     forUpdate.StatusId = service.GetStatusId("Cancelled");
+                //     var response = MapOrderResponseDTO(forUpdate);
+                //     return Ok(response);
+                // }
 
-                service.DeleteOrderGame(forUpdate.Id);
+                // service.DeleteOrderGame(forUpdate.Id);
 
-                List<int> gameIds = service.GetGameIds(model.Games);
-                if (gameIds == null || gameIds.Count == 0)
-                {
-                    return BadRequest("No games with this name!");
-                }
+                // List<int> gameIds = service.GetGameIds(model.Games);
+                // if (gameIds == null || gameIds.Count == 0)
+                // {
+                //     return BadRequest("No games with this name!");
+                // }
 
-                forUpdate.TotalPrice = service.CalculateTotalPrice(gameIds);
+                // forUpdate.TotalPrice = service.CalculateTotalPrice(gameIds);
                 forUpdate.ShippingAddress = model.ShippingAddress;
 
 
-                foreach (var gameId in gameIds)
-                {
-                    var orderGame = new OrderGame()
-                    {
-                        GameId = gameId,
-                        OrderId = forUpdate.Id
-                    };
+                // foreach (var gameId in gameIds)
+                // {
+                //     var orderGame = new OrderGame()
+                //     {
+                //         GameId = gameId,
+                //         OrderId = forUpdate.Id
+                //     };
 
-                    service.SaveOrderGame(orderGame);
-                }
+                //     service.SaveOrderGame(orderGame);
+                // }
 
                 service.Save(forUpdate);
 

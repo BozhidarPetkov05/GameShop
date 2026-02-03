@@ -20,7 +20,6 @@ public class TokenServices
         var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes("SuperTurboMegaPUSecretKey!123!PU123!PU123!"));
         var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-        //TODO: Change issuer and audience
         JwtSecurityToken token = new JwtSecurityToken(
             issuer: "pu-fmi",
             audience: "web-api-game-shop",
@@ -28,8 +27,8 @@ public class TokenServices
             expires: DateTime.Now.AddMinutes(30),
             signingCredentials: cred
         );
-        string tokenData = new JwtSecurityTokenHandler()
-                                            .WriteToken(token);
+
+        string tokenData = new JwtSecurityTokenHandler().WriteToken(token);
 
         return tokenData;
     }

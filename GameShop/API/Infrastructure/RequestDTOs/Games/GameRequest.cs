@@ -12,5 +12,4 @@ public class GameRequest
     public int CompanyId { get; set; }
     public List<int> PlatformIds { get; set; }
     public List<int> TagIds { get; set; }
-    public string ReleaseDate { get; set; }
 }

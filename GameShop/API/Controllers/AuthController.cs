@@ -18,9 +18,9 @@ namespace API.Controllers
         public IActionResult CreateToken([FromForm] AuthTokenRequest model)
         {
             if (!ModelState.IsValid)
-                return BadRequest(
-                    ServiceResultExtentions<List<Error>>.Failure(null, ModelState)
-                );
+            {
+                return BadRequest(ServiceResultExtentions<List<Error>>.Failure(null, ModelState));
+            }
 
             UserServices service = new UserServices();
             User loggedUser = service.GetAll()
@@ -32,9 +32,7 @@ namespace API.Controllers
             {
                 ModelState.AddModelError("Global", "Invalid username or password.");
 
-                return Unauthorized(
-                    ServiceResultExtentions<List<Error>>.Failure(null, ModelState)
-                );
+                return Unauthorized(ServiceResultExtentions<List<Error>>.Failure(null, ModelState));
             }
 
             TokenServices tokenService = new TokenServices();
